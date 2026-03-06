@@ -1,0 +1,7 @@
+{
+  "name": "workflow",
+  "version": "0.1.0",
+  "description": "Workflow automation plugin for Claude Code.",
+  "author": { "name": "hoanghoang262" },
+  "keywords": ["workflow", "automation", "productivity"]
+}
