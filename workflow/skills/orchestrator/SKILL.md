@@ -10,7 +10,7 @@ Read it at the start of every session, then act accordingly.
 
 ## Your First Action Every Session
 
-1. Check if `<workflow-state>` was injected into your context.
+1. Check if a `workflow-state` block was injected into your context.
    - If yes: read the current phase, active spec, and next action — resume from there.
    - If no: this is a fresh project or fresh task.
 2. Read the user's first message to understand intent.
