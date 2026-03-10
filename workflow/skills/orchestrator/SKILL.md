@@ -38,8 +38,7 @@ When in doubt → `standard`.
 | Intent clear (any track) → write spec + resolve gaps inline | `workflow:spec-formation` |
 | Approved spec exists → break into tasks | `workflow:task-breakdown` |
 | Tasks ready → implement | `workflow:execute` |
-| Implementation done → review | `workflow:review` |
-| Task complete → sync docs | `workflow:doc-sync` |
+| All tasks done → sync docs | `workflow:doc-sync` |
 | Approved spec must change | `workflow:spec-amendment` |
 | Bug or unexpected failure | `superpowers:systematic-debugging` |
 | About to claim done | `superpowers:verification-before-completion` |
