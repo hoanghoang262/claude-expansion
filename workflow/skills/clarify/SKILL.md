@@ -1,77 +1,87 @@
 ---
-name: workflow:clarify
-description: Use when user submits a requirement that is unclear, ambiguous, or missing critical details — resolve before moving to spec-formation
+name: clarify
+description: Resolve ambiguity in requirements before spec-formation. Scan for gaps, ask targeted questions, encode answers into working.md.
 ---
 
 # Clarify
 
-Resolve ambiguity in user requirements through focused, efficient questioning.
-One round of questions per message. Multiple independent questions can be asked
-together in a single round. Prefer options over open-ended questions.
-
-## When to Trigger
-
-**Auto-triggered by orchestrator when:**
-- Intent is present but details are missing (what, how, scope unclear)
-- Multiple valid interpretations exist
-- Constraints or success criteria are undefined
-
-**Do NOT trigger when:**
-- Requirements are clear enough to write a spec directly
-- User just answered clarify questions (move to spec-formation)
-- Task is `light` track (fix obvious, no ambiguity possible)
-
-**Suggest brainstorming when (mid-clarify):**
-- User's answers reveal internal inconsistencies
-- The goal itself seems uncertain or conflicted
-- User says "I'm not sure what I want"
+Identify and resolve the gaps that would block writing a solid spec.
+Questions must be targeted, minimal, and immediately encoded back into the working spec.
 
 ---
 
-## Format
+## Step 1 — Scan for gaps
 
-Group all independent questions into **one message per round**.
-Use a numbered list. For each question, offer labeled options when possible.
+Before asking anything, scan the requirement against these categories.
+For each, mark: **Clear** / **Partial** / **Missing**.
 
-```
-[Clarify] Tôi cần làm rõ một số điểm:
+| Category | Examples |
+|---|---|
+| Functional scope | What it does, what's explicitly out of scope |
+| Actors & roles | Who uses it, permission differences |
+| Data & entities | Key objects, relationships, lifecycle |
+| Behavior & flows | Happy path, error states, edge cases |
+| Non-functional | Performance, security, scale constraints |
+| Integration | External deps, APIs, failure modes |
+| Definition of done | Acceptance criteria, measurable success |
 
-1. <Question needing options>
-   a) <option>  b) <option>  c) <option>
-
-2. <Question needing options>
-   a) <option>  b) <option>
-
-3. <Open-ended question when options can't capture it>
-```
-
-After user responds, either:
-- Ask the next round if new gaps appeared from their answers
-- Proceed to `workflow:spec-formation` when all critical gaps are resolved
+Mark gaps with `[NEEDS CLARIFICATION: <question>]` inline in `working.md` as you scan.
+Only ask about **Partial** or **Missing** categories that would change implementation.
 
 ---
 
-## Rules
+## Step 2 — Ask
 
-- **One round per message** — never split a single round across multiple messages
-- **Options first** — if the answer space is bounded, list options
-- **Only critical questions** — skip nice-to-know, ask what blocks spec-writing
-- **Max 2 rounds** — if still unclear after 2 rounds, suggest `workflow:brainstorming`
-- **Never re-ask** — don't repeat questions the user already answered
+**Rules:**
+- Max **5 questions** per clarify session
+- Group all independent questions into **one message** per round
+- For each question: lead with a **recommendation** + options table, not open-ended
+- If a question depends on the answer to another, ask sequentially
+
+**Format per question:**
+
+```
+**Q{N}: <question>**
+Recommended: **{option}** — <one-sentence reason>
+
+| Option | Description |
+|--------|-------------|
+| A | ... |
+| B | ... |
+| C | ... |
+
+Reply with A/B/C or "yes" to accept the recommendation.
+```
+
+**Stop early if:**
+- All blocking gaps resolved (remaining questions become unnecessary)
+- User says "done" / "proceed" / "good enough"
+- 5 questions reached
 
 ---
 
-## Transition
+## Step 3 — Encode
 
-After clarify resolves all gaps:
+After each accepted answer:
+1. Remove or replace the matching `[NEEDS CLARIFICATION]` marker in `working.md`
+2. Update the relevant section with the clarified detail (requirement, constraint, entity, etc.)
+3. Keep changes minimal and testable — no narrative drift
 
+After all questions:
 ```
-[Clarify complete] Requirements are clear. Moving to spec-formation.
+[Clarify complete] — {N} gaps resolved. Moving to spec-formation.
 ```
 
-If inconsistency detected mid-clarify:
+If inconsistency found mid-session (user answers reveal conflicting goals):
+```
+[Clarify] Your answers suggest the goal itself may need alignment.
+Recommend running brainstorming to lock direction first.
+```
 
-```
-[Clarify] Your answers suggest the goal itself may need more exploration.
-Would you like to run a brainstorm session to align on direction first?
-```
+---
+
+## Flexibility
+
+**Light tasks** (simple, few gaps): Ask 1–2 questions max, skip taxonomy scan, resolve inline.
+
+**Heavy tasks** (complex, many unknowns): Run full taxonomy scan, use all 5 question slots, be explicit about deferred items.

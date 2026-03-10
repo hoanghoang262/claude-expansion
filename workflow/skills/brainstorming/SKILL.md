@@ -1,80 +1,108 @@
 ---
-name: workflow:brainstorming
-description: Use when the goal itself is vague or inconsistent — explore and align on direction before clarifying details
+name: brainstorming
+description: Explore and align on direction through facilitated dialogue. AI is coach, not generator — ideas come from the user.
 ---
 
 # Brainstorming
 
-Explore and align on direction through Socratic dialogue.
-Used when the goal is unclear, not just the details.
-
-## When to Trigger
-
-**Triggered by:**
-- User runs `/brainstorm` explicitly
-- Orchestrator detects inconsistency or uncertainty during clarify
-- User says they don't know what they want yet
-
-**Do NOT use when:**
-- Goal is clear, only details need resolving → use `workflow:clarify`
-- Already brainstormed and user approved direction → move on
+Facilitate the user toward a clear direction before any spec is written.
+Your role is to **draw out their thinking**, not to generate answers for them.
 
 ---
 
-## Process
+## Opening
 
-### Start
-
-Always announce:
+Always announce start:
 ```
 [Start brainstorm]
 ```
 
-### During
-
-- Ask one question at a time — Socratic, not interrogation
-- Understand the problem before proposing solutions
-- Once you understand the core need, propose **2–3 approaches** with trade-offs
-- Lead with your recommendation and reasoning
-- Let user push back, refine, or choose
-
-### End
-
-When user approves a direction, announce:
-```
-[End brainstorm]
-```
-
-Then output a summary (see Output section below).
+Confirm the topic and goal in one line, then begin.
 
 ---
 
-## Output
+## Facilitation — Phase 1: Understand
 
-**Short result (fits in chat):** Output summary directly in chat.
+Ask **one question at a time**. Do not suggest solutions yet.
+Focus on understanding the problem before proposing anything.
 
-**Long result (complex system, many decisions):** Save to `.workflow/specs/<slug>/idea.md` and reference it.
+Good questions at this stage:
+- "What problem are you actually solving?"
+- "Who is this for, and what do they struggle with today?"
+- "What does success look like in 3 months?"
+- "What have you already tried or ruled out?"
 
-### Summary format
+Listen for: contradictions, assumed constraints, unstated priorities.
+Note them — surface them at the right moment, not immediately.
+
+---
+
+## Facilitation — Phase 2: Propose
+
+Once you understand the core need, offer **2–3 approaches** with clear trade-offs.
+
+**Lead with your recommendation:**
+```
+**Recommended: Option A** — <reason in one sentence>
+
+| Option | Approach | Strength | Trade-off |
+|--------|----------|----------|-----------|
+| A ⭐ | ... | ... | ... |
+| B | ... | ... | ... |
+| C | ... | ... | ... |
+```
+
+Let the user push back. Revise if needed. Don't defend — explore.
+
+---
+
+## Facilitation — Phase 3: Stress-test (optional)
+
+After direction is chosen, offer one reasoning method to challenge it:
 
 ```
-**Brainstorm Summary**
+Direction chosen: {summary}
 
-**Goal:** <one sentence>
-**Approach chosen:** <name> — <why>
-**Key constraints:** <list>
-**Decisions locked:** <list>
-**Open questions:** <anything deferred>
+Want to stress-test this before moving on?
+Pick a method:
+  A) Pre-mortem — assume this failed in 6 months, find out why
+  B) Inversion — how would we guarantee this fails?
+  C) First Principles — strip all assumptions, rebuild from truth
+  D) Red Team — attack the approach, then defend it
+  E) Skip — direction is solid, proceed
+```
+
+Apply the chosen method and surface any gaps or risks.
+This phase is **optional** — skip for light/clear tasks.
+
+---
+
+## Closing
+
+When user approves direction:
+```
+[End brainstorm]
+
+**Summary**
+Goal: <one sentence>
+Approach: <chosen option + why>
+Constraints locked: <list>
+Key decisions: <list>
+Open items: <anything deferred>
 
 Next: <clarify | spec-formation>
 ```
+
+**Output length:**
+- Short result → output summary in chat
+- Long / complex → save to `.workflow/specs/<slug>/idea.md`, reference in chat
 
 ---
 
 ## Rules
 
-- Stay in exploration mode until direction is clear — don't jump to implementation
-- One question per message during exploration
-- Proposals come only after you understand the problem
-- Summary must be concise — capture decisions, not the conversation
-- Don't save files during the back-and-forth — only at the end if summary is long
+- One question per message during exploration — never interrogate
+- Ideas come from the user — you facilitate, not generate
+- No implementation details until direction is locked
+- Don't save files mid-session — only the final summary if it's long
+- Light tasks: skip Phase 3, keep Phase 1 short (2–3 questions max)

@@ -1,5 +1,5 @@
 ---
-name: workflow:orchestrator
+name: orchestrator
 description: Loaded at every session start — routes AI to the right workflow skill based on task intent and complexity
 ---
 
