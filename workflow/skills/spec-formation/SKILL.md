@@ -70,6 +70,19 @@ Acceptance scenarios:
 ## Key Entities          ← when data is involved
 - <Entity>: <what it is, key attributes, relationships, state transitions>
 
+<!-- If 2+ entities with relationships exist (standard/heavy), add ER diagram: -->
+```mermaid
+erDiagram
+    EntityA ||--o{ EntityB : "relationship"
+    EntityB {
+        type field
+    }
+```
+
+## Assumptions          ← non-trivial things assumed to be true without verifying
+- A-001: <we assume X is true> — if wrong, impacts: <FR-001 / EntityName>
+- A-002: <we assume Y is true> — if wrong, impacts: <SC-002>
+
 ## Non-Functional        ← heavy only, or when explicitly required
 - Performance: <measurable target, e.g., p95 < 200ms>
 - Security: <specific constraint>
@@ -90,8 +103,8 @@ Acceptance scenarios:
 - How does system handle <failure scenario>?
 
 ## Success Criteria
-- SC-001: <measurable outcome — no adjectives without numbers>
-- SC-002: <measurable outcome>
+- SC-001 (covers FR-001, FR-002): <measurable outcome — no adjectives without numbers>
+- SC-002 (covers FR-003): <measurable outcome>
 
 ## Open Items
 - <item deferred to planning or implementation — note which phase>
@@ -166,6 +179,7 @@ Before presenting for approval:
 [ ] No [NEEDS CLARIFICATION] remain (or moved to Open Items with rationale)
 [ ] Every FR: MUST + testable behavior, no HOW details, no vague verbs
 [ ] Every SC: measurable — numbers, not adjectives ("fast" → "p95 < 500ms")
+[ ] Every FR maps to at least one SC (no untestable requirement)
 [ ] Scope: both in-scope AND out-of-scope stated explicitly
 [ ] User stories have Given/When/Then (standard/heavy)
 [ ] NFR and UX sections present if track requires

@@ -34,7 +34,13 @@ Present clearly:
 What needs to change: <specific section and current text>
 Proposed change: <new text>
 Reason: <why — discovery, user request, constraint>
-Impact: <which FRs/SCs/tasks are affected>
+Blast radius:
+  - FRs affected: <list or "none">
+  - SCs affected: <list or "none">
+  - Tasks affected: <list or "none">
+  - Entities changed: <list or "none">
+  - Assumptions invalidated: <list or "none">
+  - Integrations impacted: <list or "none">
 ```
 
 ### Step 2 — Get approval
