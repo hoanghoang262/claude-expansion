@@ -12,8 +12,12 @@ Your routing guide. Read at session start, act accordingly.
 ## First Action Every Session
 
 1. Check if `<workflow-state>` was injected into context.
-   - Yes → read phase, active-spec, next-action. Resume from there.
-   - No → fresh project or new task. Read user's first message.
+   - **Yes → verify state consistency before resuming:**
+     - `phase: spec` → does `.workflow/specs/<slug>/working.md` exist? If not, restart spec-formation.
+     - `phase: planning` → does `approved.md` exist? If not, surface the inconsistency.
+     - `phase: execute` → does `tasks.md` exist? If not, run task-breakdown first.
+     - State consistent → resume from `next-action`.
+   - **No → fresh project or new task.** Read user's first message.
 2. Classify intent → pick track → route.
 
 ---

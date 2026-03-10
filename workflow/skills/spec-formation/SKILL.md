@@ -177,18 +177,26 @@ Before presenting for approval:
 
 ## Step 6 — Present & approve
 
-Show the full spec. State what was clarified and what was deferred:
+**Light track** — show a compact summary, not the full spec:
+```
+**Spec: <slug>** (light)
+Goal: <one sentence>
+Will do: <2-3 bullet FRs>
+Won't do: <scope boundary>
+Done when: <SC-001>
 
+Looks right? Reply "yes", "ok", or just give me the next task to proceed.
+```
+Implicit approval: any affirmative reply or a follow-on task message counts.
+
+**Standard/Heavy track** — show the full spec:
 ```
 Here's the spec for review.
-
-Clarifications made: {N} gaps resolved.
-Deferred to Open Items: {list with rationale}
+Clarifications resolved: {N}. Deferred to Open Items: {list}.
 
 Approve to lock, or tell me what to change.
 ```
-
-Revise until explicitly approved. Never lock without approval.
+Requires explicit approval. Revise until approved. Never lock without it.
 
 ---
 
