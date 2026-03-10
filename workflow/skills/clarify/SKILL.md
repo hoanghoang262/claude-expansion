@@ -1,48 +1,48 @@
 ---
 name: clarify
-description: Resolve ambiguity in requirements before spec-formation. Scan for gaps, ask targeted questions, encode answers into working.md.
+description: Resolve requirement gaps before spec-formation. Scan, ask, encode, report.
 ---
 
 # Clarify
 
-Identify and resolve the gaps that would block writing a solid spec.
-Questions must be targeted, minimal, and immediately encoded back into the working spec.
+Turn ambiguous requirements into clear inputs for spec-formation.
+Scan for gaps → ask targeted questions → encode answers → report coverage.
 
 ---
 
-## Step 1 — Scan for gaps
+## Phase 1 — Scan
 
 Before asking anything, scan the requirement against these categories.
-For each, mark: **Clear** / **Partial** / **Missing**.
+Mark each: **Clear** / **Partial** / **Missing**.
 
-| Category | Examples |
-|---|---|
-| Functional scope | What it does, what's explicitly out of scope |
-| Actors & roles | Who uses it, permission differences |
-| Data & entities | Key objects, relationships, lifecycle |
-| Behavior & flows | Happy path, error states, edge cases |
-| Non-functional | Performance, security, scale constraints |
-| Integration | External deps, APIs, failure modes |
-| Definition of done | Acceptance criteria, measurable success |
+| # | Category | What to check |
+|---|----------|---------------|
+| 1 | Functional scope | What it does, what's out of scope |
+| 2 | Actors & roles | Who uses it, permission differences |
+| 3 | Data & entities | Key objects, relationships, state transitions |
+| 4 | Behavior & flows | Happy path, errors, edge cases |
+| 5 | Non-functional | Performance, security, scale targets |
+| 6 | Integration | External deps, APIs, failure modes |
+| 7 | Definition of done | Acceptance criteria, measurable success |
 
-Mark gaps with `[NEEDS CLARIFICATION: <question>]` inline in `working.md` as you scan.
-Only ask about **Partial** or **Missing** categories that would change implementation.
+As you scan, write `[NEEDS CLARIFICATION: <question>]` inline at the relevant spot in `working.md`.
+
+**Triage questions:**
+- Will this answer change implementation or acceptance criteria? → **Ask**
+- Is this better resolved during spec-formation or planning? → **Defer**
+- Is this a nice-to-know detail? → **Skip**
 
 ---
 
-## Step 2 — Ask
+## Phase 2 — Ask
 
-**Rules:**
-- Max **5 questions** per clarify session
-- Group all independent questions into **one message** per round
-- For each question: lead with a **recommendation** + options table, not open-ended
-- If a question depends on the answer to another, ask sequentially
+Present all independent questions in **one message**.
+Sequential questions (answer B depends on answer A) must come in separate rounds.
 
-**Format per question:**
-
+**Per question format:**
 ```
 **Q{N}: <question>**
-Recommended: **{option}** — <one-sentence reason>
+> Recommended: **{option}** — <one-sentence reason>
 
 | Option | Description |
 |--------|-------------|
@@ -50,38 +50,57 @@ Recommended: **{option}** — <one-sentence reason>
 | B | ... |
 | C | ... |
 
-Reply with A/B/C or "yes" to accept the recommendation.
+Reply with A/B/C, "yes" to accept recommendation, or a short custom answer.
 ```
 
-**Stop early if:**
-- All blocking gaps resolved (remaining questions become unnecessary)
-- User says "done" / "proceed" / "good enough"
-- 5 questions reached
+**Limits:**
+- Max **5 questions** per session
+- Stop early when all blocking gaps are resolved
+- Respect "done" / "proceed" / "skip" signals
 
 ---
 
-## Step 3 — Encode
+## Phase 3 — Encode
 
-After each accepted answer:
-1. Remove or replace the matching `[NEEDS CLARIFICATION]` marker in `working.md`
-2. Update the relevant section with the clarified detail (requirement, constraint, entity, etc.)
-3. Keep changes minimal and testable — no narrative drift
-
-After all questions:
-```
-[Clarify complete] — {N} gaps resolved. Moving to spec-formation.
-```
-
-If inconsistency found mid-session (user answers reveal conflicting goals):
-```
-[Clarify] Your answers suggest the goal itself may need alignment.
-Recommend running brainstorming to lock direction first.
-```
+After each answer:
+1. Remove the matching `[NEEDS CLARIFICATION]` from `working.md`
+2. Update the relevant section with the clarified detail
+3. Keep changes minimal and testable
 
 ---
 
-## Flexibility
+## Phase 4 — Report
 
-**Light tasks** (simple, few gaps): Ask 1–2 questions max, skip taxonomy scan, resolve inline.
+After all questions, output a coverage table:
 
-**Heavy tasks** (complex, many unknowns): Run full taxonomy scan, use all 5 question slots, be explicit about deferred items.
+```
+[Clarify complete]
+
+| Category | Status |
+|----------|--------|
+| Functional scope | ✅ Resolved |
+| Actors & roles | ✅ Resolved |
+| Data & entities | ⏩ Deferred → spec-formation |
+| Behavior & flows | ✅ Resolved |
+| Non-functional | ⚠️ Outstanding (low impact, safe to proceed) |
+| Integration | ⏩ Deferred → planning |
+| Definition of done | ✅ Resolved |
+
+Next: spec-formation
+```
+
+Status key:
+- ✅ Resolved — answered in this session
+- ⏩ Deferred — better handled in next phase (note which phase)
+- ⚠️ Outstanding — still unclear, flagged as low impact
+- 🔴 Blocking — must resolve before proceeding
+
+---
+
+## Scale
+
+| Track | Behavior |
+|-------|----------|
+| `light` | Skip scan. Ask 1–2 critical questions max. Brief report. |
+| `standard` | Run full scan. Up to 5 questions. Full report. |
+| `heavy` | Run full scan. Use all 5 slots. Explicitly flag all deferred/outstanding items. |

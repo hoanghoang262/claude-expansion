@@ -1,108 +1,107 @@
 ---
 name: brainstorming
-description: Explore and align on direction through facilitated dialogue. AI is coach, not generator — ideas come from the user.
+description: Facilitate direction alignment through dialogue. AI draws out user thinking — ideas come from the user, not the AI.
 ---
 
 # Brainstorming
 
-Facilitate the user toward a clear direction before any spec is written.
-Your role is to **draw out their thinking**, not to generate answers for them.
+Align on direction before writing any spec.
+Your role: **facilitate**, not generate. Every idea must come from the user.
 
 ---
 
 ## Opening
 
-Always announce start:
 ```
 [Start brainstorm]
 ```
 
-Confirm the topic and goal in one line, then begin.
+State the topic and goal in one line. Begin Phase 1.
 
 ---
 
-## Facilitation — Phase 1: Understand
+## Phase 1 — Understand
 
-Ask **one question at a time**. Do not suggest solutions yet.
-Focus on understanding the problem before proposing anything.
+One question per message. No proposals yet.
+Listen for: contradictions, assumed constraints, unstated priorities.
 
-Good questions at this stage:
+Useful questions:
 - "What problem are you actually solving?"
 - "Who is this for, and what do they struggle with today?"
-- "What does success look like in 3 months?"
-- "What have you already tried or ruled out?"
+- "What does success look like concretely?"
+- "What have you ruled out, and why?"
+- "What's the riskiest assumption here?"
 
-Listen for: contradictions, assumed constraints, unstated priorities.
-Note them — surface them at the right moment, not immediately.
+Note tensions and contradictions silently. Surface them when you have enough context.
 
 ---
 
-## Facilitation — Phase 2: Propose
+## Phase 2 — Propose
 
-Once you understand the core need, offer **2–3 approaches** with clear trade-offs.
+Once the core need is clear, offer **2–3 approaches** with trade-offs.
 
-**Lead with your recommendation:**
 ```
 **Recommended: Option A** — <reason in one sentence>
 
 | Option | Approach | Strength | Trade-off |
 |--------|----------|----------|-----------|
 | A ⭐ | ... | ... | ... |
-| B | ... | ... | ... |
-| C | ... | ... | ... |
+| B    | ... | ... | ... |
+| C    | ... | ... | ... |
 ```
 
-Let the user push back. Revise if needed. Don't defend — explore.
+Let the user push back. Revise without defending. Keep exploring until direction is locked.
 
 ---
 
-## Facilitation — Phase 3: Stress-test (optional)
+## Phase 3 — Stress-test *(optional, skip for light tasks)*
 
-After direction is chosen, offer one reasoning method to challenge it:
+After direction is chosen, analyze the specific content and suggest the **3 most relevant** reasoning methods for it.
+Do not show a fixed menu — pick what actually fits this direction and its risks.
 
 ```
-Direction chosen: {summary}
+Direction: <summary>
 
-Want to stress-test this before moving on?
-Pick a method:
-  A) Pre-mortem — assume this failed in 6 months, find out why
-  B) Inversion — how would we guarantee this fails?
-  C) First Principles — strip all assumptions, rebuild from truth
-  D) Red Team — attack the approach, then defend it
-  E) Skip — direction is solid, proceed
+Suggested stress-tests for this specific case:
+  A) <Method name> — <why it fits this direction>
+  B) <Method name> — <why it fits this direction>
+  C) <Method name> — <why it fits this direction>
+  D) Skip — direction is solid
+
+Which would you like to run?
 ```
 
-Apply the chosen method and surface any gaps or risks.
-This phase is **optional** — skip for light/clear tasks.
+Available methods (choose the most relevant, not all):
+Pre-mortem, Inversion, First Principles, Red Team, Constraint Removal,
+Stakeholder Mapping, Analogical Reasoning, Socratic Questioning, Threat Modeling,
+Assumption Surfacing, Edge Case Hunting, Second-Order Effects.
+
+Apply the chosen method, surface gaps or risks, let user respond.
 
 ---
 
 ## Closing
 
-When user approves direction:
 ```
 [End brainstorm]
 
 **Summary**
 Goal: <one sentence>
 Approach: <chosen option + why>
-Constraints locked: <list>
+Constraints locked: <list or "none">
 Key decisions: <list>
-Open items: <anything deferred>
+Deferred: <anything explicitly set aside>
 
 Next: <clarify | spec-formation>
 ```
 
-**Output length:**
-- Short result → output summary in chat
-- Long / complex → save to `.workflow/specs/<slug>/idea.md`, reference in chat
+**Output rule:** Short summary → chat only. Long or complex → save to `.workflow/specs/<slug>/idea.md`.
 
 ---
 
 ## Rules
 
-- One question per message during exploration — never interrogate
-- Ideas come from the user — you facilitate, not generate
-- No implementation details until direction is locked
-- Don't save files mid-session — only the final summary if it's long
-- Light tasks: skip Phase 3, keep Phase 1 short (2–3 questions max)
+- One question per message during Phase 1
+- No implementation details before direction is locked
+- Do not save files mid-session — final summary only
+- Light tasks: Phase 1 = 2–3 questions max, skip Phase 3
