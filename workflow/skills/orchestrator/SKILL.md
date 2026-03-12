@@ -105,6 +105,8 @@ Never suggest more than once per session.
 
 ## Phase: Task Breakdown
 
+**Light track → skip.** Go directly to Execute.
+
 ```
 [workflow:task-breakdown] Decomposing: <slug>
 ```
@@ -192,9 +194,9 @@ Action: proceeding | ⚠️ need input: ...
    - `standard/heavy` → dispatch `workflow:agents/spec-reviewer` (SPEC + TASK + COMMITS)
      - ✅ → dispatch `workflow:agents/quality-reviewer` (COMMITS + CONVENTIONS + SCOPE: per-task)
        - ✅ → task approved
-       - ❌ Critical/Important → implementer fixes → re-review
+       - ❌ Critical/Important → dispatch new implementer with issues list → re-dispatch spec-reviewer
        - ❌ Minor → note, proceed
-     - ❌ → implementer fixes → re-run spec-reviewer
+     - ❌ → dispatch new implementer with issues list → re-dispatch spec-reviewer
 
 4. Mark task `[x] done` in tasks.md. Update STATE.md. Next task.
 

@@ -1,25 +1,24 @@
 ---
 name: doc-syncer
-description: Updates project docs to reflect what was built. Reads approved.md related: field to know exactly which docs to touch. Independent agent — works from artifact, not conversation history.
+description: Updates project docs to reflect what was built. Reads related: frontmatter from approved.md to know exactly which docs to touch.
+model: claude-haiku-4-5
 ---
 
-# Doc Syncer
+# Doc Sync
 
-You are a documentation sync agent. Your job: update project docs to accurately reflect what was just built. Nothing more.
+## Input
 
-You start from the caller's provided context and read files as needed.
+**SPEC_PATH:** {path to approved.md}
+**COMMITS:** {git SHAs of what was built}
+**TRACK:** {light | standard | heavy}
 
-## Input (provided by caller)
-
-- `SPEC_PATH`: path to approved.md (contains `related:` frontmatter)
-- `COMMITS`: git SHAs of what was built
-- `TRACK`: light | standard | heavy
+---
 
 ## Process
 
 ### Step 1 — Read related: field
 
-Read `approved.md` frontmatter for `related:` — this tells you exactly which docs to update.
+Read `approved.md` frontmatter for `related:` — primary source of which docs to update.
 
 ```yaml
 related:
@@ -29,11 +28,10 @@ related:
   adr: docs/adr/YYYY-MM-DD-<decision>.md
 ```
 
-For each entry:
 - Exists → update to reflect what was built
 - Doesn't exist → create it
 
-If `related:` absent → fall back: read commits, assess what changed, find affected docs manually.
+If `related:` absent → read commits, assess changes, find affected docs manually.
 
 ### Step 2 — Update
 
@@ -41,44 +39,38 @@ If `related:` absent → fall back: read commits, assess what changed, find affe
 |-------------|---------------|
 | New feature behavior | `docs/overview.md` if big picture changed |
 | Architecture decision | New ADR: `docs/adr/YYYY-MM-DD-<decision>.md` |
-| API or interface change | Relevant reference doc |
+| API / interface change | Relevant reference doc |
 | Bug fix | Nothing unless reveals design correction |
 | Refactor | Nothing unless changes public behavior |
 
 **ADR format:**
 ```markdown
-# ADR: <decision title>
+# ADR: <title>
 
 Date: YYYY-MM-DD
 Status: accepted
 
 ## Context
-<why this decision was needed>
-
 ## Decision
-<what was decided>
-
 ## Consequences
-<what this enables, what it constrains>
 ```
 
 **Scale:**
-- `light` → usually nothing, skip unless public behavior changed
+- `light` → skip unless public behavior changed
 - `standard` → update affected docs, add ADR if architectural
-- `heavy` → full assessment — overview, ADRs, references as needed
+- `heavy` → full assessment — overview, ADRs, references
 
 ### Step 3 — Report
 
 ```
 [doc-syncer] Complete
-Updated: <list of files>
-Created: <list of new files>
+Updated: <files>
+Created: <files>
 Skipped: <what and why>
 ```
 
 ## Rules
 
-- Update only what changed — don't rewrite docs that are still accurate
-- Don't create docs that restate code — docs capture decisions and behavior, not implementation
-- Session working notes do not get promoted to docs
+- Update only what changed
+- Docs capture decisions and behavior — not implementation details
 - If a doc would be misleading without more context → flag it, don't guess
