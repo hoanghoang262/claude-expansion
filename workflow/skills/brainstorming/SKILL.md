@@ -14,25 +14,29 @@ description: Align on direction before writing spec. AI coaches and draws out �
 [workflow:brainstorming] Starting — Topic: <topic>
 ```
 
-Check `.workflow/specs/` for existing `idea.md`:
-- Found → "Previous brainstorm on `<topic>` exists. Continue or start fresh?"
-- Not found → proceed to Phase 1
+Proceed to Phase 1 immediately.
 
 ---
 
 ## Phase 1 — Understand
 
-One question per message. No proposals yet.
-Note tensions, contradictions, unstated priorities — surface only when you have enough context.
+Goal: draw out the user's real problem, constraints, and mental model. No proposals yet.
+
+**Questioning style:**
+- Prioritize open questions — let user describe freely rather than answer yes/no
+- Group related questions together (2–4 per message) — avoid one-at-a-time drip
+- Skip trivial or obvious questions — ask only what genuinely changes understanding
+- If research would expand the picture, do it inline and share findings as input to discussion
+- Surface counter-arguments and opposing views with specific evidence — expand options, don't narrow them
 
 Useful probes:
-- "What problem are you actually solving?"
-- "What does success look like in 3 months — concretely?"
+- "What problem are you actually solving — and for whom?"
+- "What does success look like concretely in 3 months?"
 - "What have you already tried or ruled out, and why?"
-- "What's the riskiest assumption in this direction?"
-- "What would make you abandon this approach entirely?"
+- "What's the riskiest assumption here?"
+- "What would make you abandon this direction entirely?"
 
-Checkpoint every 3–4 exchanges:
+Checkpoint when enough context is gathered:
 ```
 Explored so far: <brief summary>
 → Keep digging, or ready to look at approaches?
@@ -101,13 +105,14 @@ Deferred to spec: <open questions>
 Next: spec-formation
 ```
 
-Save to `.workflow/specs/<slug>/idea.md` only if session was long or decisions are complex.
+Brainstorm summary lives in conversation only — no files needed.
 
 ---
 
 ## Rules
 
-- One question per message in Phase 1
 - No implementation details before direction is locked
-- Checkpoint every 3–4 exchanges
-- Light tasks: max 3 questions in Phase 1, skip Phase 3
+- Counter-arguments must have specific evidence, not just "some people think X"
+- No trivial questions — every question must change understanding if answered differently
+- No implementation details before direction is locked
+- Phase 3 optional — skip if direction is clearly solid
