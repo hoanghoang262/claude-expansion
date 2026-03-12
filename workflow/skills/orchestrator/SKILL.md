@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: Loaded at every session start — routes to the right skill based on intent and complexity.
+description: Loaded at every session start — orients AI within the workflow, guides what to do next, surfaces the right skill at the right time.
 ---
 
 # Workflow Orchestrator
@@ -34,26 +34,35 @@ description: Loaded at every session start — routes to the right skill based o
 
 ---
 
-## Brainstorm Gate
+## Brainstorm Detection
 
-Ask these 3 questions internally before routing:
+Assess internally: is the user's intent strategically ambiguous?
 
-1. Does user know the direction they want to take?
-2. Is ambiguity strategic (which approach?) or requirement-level (what exactly?)?
-3. Would different answers lead to fundamentally different specs?
+Signals of strategic ambiguity:
+- User is choosing between fundamentally different approaches
+- "Better", "cleaner", "scale" without defining what that means
+- Multiple valid directions with meaningfully different trade-offs
 
-**If ANY answer is "strategic ambiguity" → route to `workflow:brainstorming`**
-**Otherwise → route to `workflow:spec-formation` directly**
+**If detected → suggest brainstorming, don't force it:**
+```
+Tôi thấy bạn đang phân vân về <X>. Bạn có muốn brainstorm để làm rõ hướng đi trước không,
+hay bạn đã có hướng và muốn đi thẳng vào spec?
+```
 
-Examples that go straight to spec (no brainstorm):
+User can decline → proceed to spec-formation directly.
+User accepts → invoke `workflow:brainstorming`.
+
+**No ambiguity detected → go straight to spec-formation. Never suggest brainstorm for clear tasks.**
+
+Examples — no brainstorm needed:
 - "add export PDF for invoices"
 - "add filter by date on orders page"
 - "refactor auth module to separate guard/service/repository"
 
-Examples that need brainstorm:
-- "want to improve collaboration but unsure whether to do comments, mentions, or activity feed"
-- "want better permissions but unsure role-based vs policy-based"
-- "want to restructure for scale but unsure modular monolith vs microservices"
+Examples — suggest brainstorm:
+- "muốn cải thiện collaboration nhưng chưa biết nên làm gì"
+- "muốn permission tốt hơn nhưng chưa rõ hướng"
+- "muốn restructure để scale nhưng chưa chắc cách tiếp cận"
 
 ---
 
@@ -71,9 +80,10 @@ Default: `standard` when uncertain.
 
 ## Skill Routing
 
-| Situation | Route to |
-|-----------|----------|
-| Strategic ambiguity — user doesn't know direction | `workflow:brainstorming` |
+| Situation | Next step |
+|-----------|-----------|
+| Strategic ambiguity detected | Suggest brainstorming → user decides |
+| User accepts brainstorm | `workflow:brainstorming` |
 | Intent clear (any track) | `workflow:spec-formation` |
 | Approved spec exists → break into tasks | `workflow:task-breakdown` |
 | Tasks ready → implement | `workflow:execute` |
