@@ -1,41 +1,43 @@
 ---
 name: doc-sync
-description: Update project docs to reflect what was actually built. Runs after execute, before branch completion.
+description: Update project docs to reflect what was built. Runs after execute, before branch completion.
 ---
 
 # Doc Sync
 
-Keep docs honest. Update only what changed. Don't create docs for their own sake.
+```
+[workflow:doc-sync] Assessing changes: <slug>
+```
+
+Update only what changed. Don't create docs for their own sake.
 
 ---
 
-## Step 1 — Assess what changed
+## Step 1 — Assess
 
-Compare what was built (approved.md + commits) against existing docs in `docs/`.
+Compare built (approved.md + commits) against existing `docs/`.
 
-Ask per changed area:
-- Does any existing doc describe this behavior? → update it
-- Is this a new architectural decision? → create ADR
-- Does this change the project overview? → update overview
-- Is there an API/interface change? → update relevant reference
+Per changed area:
+- Existing doc describes this behavior? → update it
+- New architectural decision? → create ADR
+- Project overview changed? → update overview
+- API/interface changed? → update reference
 
-Skip docs that are unaffected. Skip docs that would just restate the code.
+Skip unaffected docs. Skip docs that restate code.
 
 ---
 
 ## Step 2 — Update
 
-**What to update (by type):**
-
 | Change type | Doc to update |
 |-------------|---------------|
-| New feature behavior | `docs/overview.md` if it changes the big picture |
+| New feature behavior | `docs/overview.md` if it changes big picture |
 | Architecture decision | New ADR: `docs/adr/YYYY-MM-DD-<decision>.md` |
 | API or interface change | Relevant reference doc |
-| Bug fix | Nothing unless it reveals a design correction |
+| Bug fix | Nothing unless it reveals design correction |
 | Refactor | Nothing unless it changes public behavior |
 
-**ADR format (when needed):**
+**ADR format:**
 ```markdown
 # ADR: <decision title>
 
@@ -54,26 +56,13 @@ Status: accepted
 
 ---
 
-## Step 3 — Memory rule
-
-| Content | Where |
-|---------|-------|
-| Long-term architectural knowledge | `docs/` |
-| Current project state | `.workflow/STATE.md` |
-| Spec details | `.workflow/specs/<slug>/approved.md` |
-| Session working notes | Nowhere — discard after session |
-
-Do not write session thinking into docs. Docs capture decisions and outcomes, not process.
-
----
-
-## Step 4 — Announce
+## Step 3 — Announce
 
 ```
-[Doc sync complete]
-Updated: <list of files touched>
-Created: <list of new files>
-Skipped: <what was assessed but not changed, and why>
+[workflow:doc-sync] Complete
+Updated: <list>
+Created: <list>
+Skipped: <what and why>
 ```
 
 Update STATE.md:
@@ -84,10 +73,21 @@ next-action: Run superpowers:finishing-a-development-branch
 
 ---
 
+## Memory rule
+
+| Content | Where |
+|---------|-------|
+| Long-term architectural knowledge | `docs/` |
+| Current project state | `.workflow/STATE.md` |
+| Spec details | `.workflow/specs/<slug>/approved.md` |
+| Session working notes | Nowhere — discard after session |
+
+---
+
 ## Scale
 
 | Track | Behavior |
 |-------|----------|
-| `light` | Usually nothing. Skip unless a public behavior changed. |
+| `light` | Usually nothing. Skip unless public behavior changed. |
 | `standard` | Update affected docs. Add ADR if architectural. |
-| `heavy` | Full assessment. Overview, ADRs, reference docs as needed. |
+| `heavy` | Full assessment — overview, ADRs, references as needed. |
