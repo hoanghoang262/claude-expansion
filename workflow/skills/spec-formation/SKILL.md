@@ -184,7 +184,18 @@ Requires explicit approval.
 
 On approval:
 1. Copy `working.md` → `approved.md`, set `Status: approved`
-2. Delete `working.md`
+2. Add `related:` frontmatter — link to docs this spec will affect:
+```yaml
+---
+related:
+  features: docs/features/<name>.md        # if this adds/changes a feature
+  use-cases: docs/use-cases/<name>.md      # if this changes user-facing behavior
+  architecture: docs/architecture.md       # only if architecture changes
+  adr: docs/adr/YYYY-MM-DD-<decision>.md  # only if a new decision is locked
+---
+```
+Only include docs that exist or will be created in this delivery. Omit irrelevant fields.
+3. Delete `working.md`
 3. Update `.workflow/STATE.md`
 
 **Light:**

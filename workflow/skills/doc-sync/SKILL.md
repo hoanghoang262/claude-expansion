@@ -15,13 +15,24 @@ Update only what changed. Don't create docs for their own sake.
 
 ## Step 1 — Assess
 
-Compare built (approved.md + commits) against existing `docs/`.
+Read `approved.md` frontmatter for `related:` field — this is the primary source of which docs to update.
 
-Per changed area:
+```yaml
+related:
+  features: docs/features/<name>.md
+  use-cases: docs/use-cases/<name>.md
+  architecture: docs/architecture.md
+  adr: docs/adr/YYYY-MM-DD-<decision>.md
+```
+
+For each entry in `related:`:
+- Doc exists → update it to reflect what was built
+- Doc doesn't exist → create it
+
+If `related:` is absent or incomplete, fall back to manual assessment:
 - Existing doc describes this behavior? → update it
 - New architectural decision? → create ADR
 - Project overview changed? → update overview
-- API/interface changed? → update reference
 
 Skip unaffected docs. Skip docs that restate code.
 

@@ -79,6 +79,29 @@ The orchestrator checks doc sync status during group review and final integratio
 
 ---
 
+## Traceability
+
+Approved specs carry a `related:` frontmatter block linking to the long-term docs they affect. This is the only cross-reference mechanism — lightweight, AI-maintained, no tooling required.
+
+**Format in `approved.md`:**
+```yaml
+---
+related:
+  features: docs/features/<name>.md
+  use-cases: docs/use-cases/<name>.md
+  architecture: docs/architecture.md   # only if architecture changed
+  adr: docs/adr/YYYY-MM-DD-<decision>.md  # only if a new decision was made
+---
+```
+
+**Rules:**
+- AI populates `related:` when locking the spec — based on what the spec touches
+- Only include docs that actually exist or will be created as part of this delivery
+- `doc-sync` reads `related:` to know exactly which docs to update — no guessing
+- If a linked doc doesn't exist yet, AI creates it as part of doc-sync
+
+---
+
 ## Doc Ownership
 
 AI is responsible for:
