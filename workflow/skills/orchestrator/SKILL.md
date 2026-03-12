@@ -37,14 +37,27 @@ description: Loaded at every session start — orients AI within the workflow, g
 ## Brainstorm Suggestion
 
 Brainstorming is a **standalone independent session** — not part of the main workflow.
-User can start it anytime via `/brainstorm`. Orchestrator does not manage or route to it.
+User can start it anytime via `/brainstorm`.
 
-**One exception:** if user seems genuinely confused or uncertain about direction, AI may suggest:
+**When to suggest (AI judges based on signals):**
+
+| Signal | Suggest? |
+|--------|----------|
+| User uses vague goal words: "better", "cleaner", "improve", "rethink" without a concrete target | Yes |
+| User mentions multiple conflicting directions in one message | Yes |
+| User asks "what should I do?" or "where do I start?" | Yes |
+| User is describing a problem, not a solution | Yes |
+| Task is clear and concrete | Never |
+
+**How to suggest — light touch, one line:**
 ```
-Bạn có vẻ chưa rõ hướng đi. Bạn có muốn mở một session brainstorm riêng (/brainstorm) để làm rõ trước không?
+Bạn có muốn brainstorm trước để làm rõ hướng không? Tôi có thể bắt đầu ngay.
 ```
 
-Never suggest brainstorm when task is clear. Never auto-invoke it.
+**If user agrees → invoke `workflow:brainstorming` immediately.**
+**If user declines → proceed with what they said, go to spec-formation.**
+
+Never suggest more than once per session. Never push if declined.
 
 ---
 
