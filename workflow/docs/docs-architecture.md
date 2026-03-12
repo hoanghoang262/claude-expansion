@@ -1,145 +1,134 @@
-# Docs Architecture
+# Memory Architecture
 
-Docs are the project's living memory. They are not generated once and left to rot — they are actively maintained as a reflection of the real system.
-
----
-
-## Two Zones
-
-### Long-Term Docs
-
-High-authority. Contains knowledge that persists across all sessions and all contributors.
-
-**What lives here:**
-
-| Document Type | Purpose |
-|---|---|
-| `overview.md` | Project identity, goals, current state |
-| `architecture.md` | System design, major components, relationships |
-| `requirements.md` | What the system must do (high level) |
-| `specs/` | Approved specs (one per feature/change) |
-| `features/` | Feature map — what exists and what it does |
-| `use-cases/` | Concrete use cases and expected behavior |
-| `adr/` | Architecture Decision Records — decisions and their reasoning |
-| `dev/` | Developer guide — setup, conventions, contribution rules |
-| `testing.md` | Testing strategy and quality expectations |
-| `status.md` | Current project state, in-progress work, known issues |
-
-**Rules for long-term docs:**
-- Content must be accurate at the time of writing
-- Must be updated as part of any delivery that changes what is documented
-- Must not contain speculation or aspirational statements presented as fact
-- Must be kept concise enough to be read — if a doc becomes too long, split it
+Two zones with clear separation. Never mix them.
 
 ---
 
-### Temp / Session Docs
+## Long-Term Memory — `docs/`
 
-Low-authority. Workspace for thinking during a session or delivery cycle.
+Project knowledge that persists across all sessions and contributors. Updated continuously as the system evolves.
 
-**What lives here:**
+```
+docs/
+├── PROJECT.md                    # project identity, stack, goals, constraints
+├── overview.md                   # what the system does and how
+├── specs/<slug>/
+│   └── spec.md                   # locked contract (status: draft → approved)
+├── features/<name>.md            # feature behavior docs
+├── use-cases/<name>.md           # user-facing behavior
+└── adr/<date>-<name>.md          # architecture decisions (immutable, global)
+```
 
-| Content Type | Purpose |
-|---|---|
-| Brainstorm notes | Exploring ideas before spec is formed |
-| Working spec drafts | Spec layers 1 and 2 before approval |
-| Scratch analysis | Understanding existing code or behavior |
-| Agent working notes | Intermediate state during task execution |
-| Session summaries | What happened in a working session |
+**Rules:**
+- Content must be accurate at time of writing
+- Updated as part of any delivery that changes what is documented
+- No speculation presented as fact
+- A change is not done until docs reflect it
 
-**Rules for temp docs:**
-- Created freely during work — no overhead
-- Discarded after the session or delivery cycle unless promoted
-- Never treated as a source of truth
+---
+
+## Short-Term Memory — `.workflow/`
+
+Thinking in progress. Not project knowledge — working space for the current session or delivery.
+
+```
+.workflow/
+├── brainstorm/
+│   └── <N>-<topic>.md            # numbered, kept until feature ships
+└── log/
+    ├── task-N.md                 # implementer output: SHA, what built
+    └── review-N.md               # reviewer output: ✅/❌ + issues
+```
+
+**Rules:**
+- Created freely — no ceremony
+- Never treated as source of truth
 - Not linked from long-term docs
+- Cleaned up after feature ships (`phase: done`)
 
 ---
 
-## The Promote Rule
+## Promotion Rule
 
-Content moves from temp to long-term only if it satisfies at least one of these criteria:
+Short-term content moves to `docs/` only when distilled — rough notes stripped, only decisions and behavior kept.
 
-1. **It has long-term value** — it will be needed in future sessions or by future contributors
-2. **It affects how the system is understood** — removing it would leave someone confused about the project
-3. **It reflects a change in requirement, spec, or design** — it represents what the project has committed to
-4. **It is a decision that needs traceability** — it answers "why was this built this way"
-5. **It is needed to maintain the system** — future AI or human contributors will need it to work safely
+Promote if:
+1. Has long-term value (needed in future sessions or by future contributors)
+2. Affects how the system is understood
+3. Reflects a committed requirement, spec, or design decision
+4. Is a traceable architectural decision
 
-If content does not meet any of these criteria, it does not get promoted.
-
----
-
-## Doc Sync Is Part of Done
-
-Doc updates are not optional. They are part of the definition of done for every task.
-
-When a task changes behavior, architecture, or constraints, the relevant docs must be updated in the same delivery. A change is not complete until the docs reflect it.
-
-The orchestrator checks doc sync status during group review and final integration review.
+If none of these → discard.
 
 ---
 
 ## Traceability
 
-Approved specs carry a `related:` frontmatter block linking to the long-term docs they affect. This is the only cross-reference mechanism — lightweight, AI-maintained, no tooling required.
+`spec.md` is the connection hub. It carries `related:` frontmatter linking to every `docs/` file this delivery touches:
 
-**Format in `approved.md`:**
 ```yaml
 ---
+status: approved
 related:
-  features: docs/features/<name>.md
+  feature: docs/features/<name>.md
   use-cases: docs/use-cases/<name>.md
-  architecture: docs/architecture.md   # only if architecture changed
-  adr: docs/adr/YYYY-MM-DD-<decision>.md  # only if a new decision was made
+  adr: docs/adr/YYYY-MM-DD-<decision>.md   # only if architectural decision made
 ---
 ```
 
+`doc-syncer` reads `related:` → knows exactly which files to update. No guessing, no scanning.
+
 **Rules:**
-- AI populates `related:` when locking the spec — based on what the spec touches
-- Only include docs that actually exist or will be created as part of this delivery
-- `doc-sync` reads `related:` to know exactly which docs to update — no guessing
-- If a linked doc doesn't exist yet, AI creates it as part of doc-sync
+- Only include docs that exist or will be created in this delivery
+- Update `related:` if a linked file is renamed or moved
+- `adr:` only when a new architectural decision was locked
 
 ---
 
-## Doc Ownership
+## Spec Lifecycle
 
-AI is responsible for:
-- Identifying which docs need updating for a given task
-- Making the updates as part of task delivery
-- Proposing new docs when new capabilities or decisions are introduced
+One file. Evolves in-place.
 
-Users are responsible for:
-- Approving changes to high-stakes docs (architecture, requirements, ADRs)
-- Correcting inaccuracies when they notice them
-- Deciding whether a new doc category is needed
+```
+Status: draft    → being written, gaps marked [GAP: ...]
+Status: approved → locked contract, changes only via amendment process
+```
+
+Amendment = edit `spec.md` directly + commit with descriptive message:
+```
+spec(<slug>): amend <section> — <what changed and why>
+```
+
+Git is the audit trail. No amendment log in the file itself.
 
 ---
 
 ## ADR Convention
 
-Architecture Decision Records live in `docs/adr/`. Each ADR covers one decision.
-
-**ADR format:**
-
 ```
-# ADR-NNN: [Decision Title]
+docs/adr/<date>-<slug>.md
+```
 
-## Status
-[Proposed | Accepted | Superseded by ADR-NNN]
+ADRs are global and immutable. Superseded by a new ADR, never edited.
+
+```markdown
+# ADR: <title>
+
+Date: YYYY-MM-DD
+Status: accepted | superseded by docs/adr/<date>-<slug>.md
 
 ## Context
-What situation or problem forced this decision.
+<why this decision was needed>
 
 ## Decision
-What was decided.
+<what was decided>
 
 ## Consequences
-What becomes easier, harder, or different as a result.
+<what this enables, what it constrains>
 ```
 
-ADRs are written when:
-- A foundational design choice is made
-- A technology or approach was chosen over a meaningful alternative
-- A constraint is established that will affect future decisions
-- A past decision is being reversed or superseded
+---
+
+## Doc Sync Is Part of Done
+
+Every delivery that changes behavior, architecture, or constraints MUST update affected `docs/` files before being marked done. `doc-syncer` runs last, reads `related:` from `spec.md`, makes the updates.

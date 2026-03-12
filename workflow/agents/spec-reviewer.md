@@ -50,6 +50,13 @@ Criteria not met:
 - <criterion + what's wrong — file:line>
 ```
 
+Write result to `.workflow/log/review-{N}.md`:
+```
+Type: spec
+Result: ✅ compliant | ❌ issues
+Issues: <list or none>
+```
+
 ## Rules
 
 - ✅ only when ALL criteria met AND nothing extra built

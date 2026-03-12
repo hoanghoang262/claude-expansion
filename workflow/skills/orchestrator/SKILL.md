@@ -1,30 +1,15 @@
 ---
 name: orchestrator
-description: Loaded at every session start. Single source of truth for all workflow phases — no routing to intermediate skills.
+description: Loaded at every session start. Single source of truth for all workflow phases.
 ---
 
 # Workflow Orchestrator
-
----
-
-## On Session Start
 
 ```
 [workflow:orchestrator] Session start
 ```
 
-1. Check `<workflow-state>` in context:
-   - Present → verify consistency (table below), resume from `next-action`
-   - Absent → read user message, classify, proceed
-
-2. State consistency checks:
-
-| Phase | Check | If inconsistent |
-|-------|-------|-----------------|
-| `spec` | `working.md` exists? | Restart spec-formation |
-| `planning` | `approved.md` exists? | Surface to user |
-| `execute` | `tasks.md` exists? | Run task-breakdown first |
-| `review` | All tasks done in `tasks.md`? | Yes → doc-sync. No → resume execute |
+Read user's message → classify intent → route to correct phase.
 
 ---
 
@@ -45,13 +30,13 @@ description: Loaded at every session start. Single source of truth for all workf
 | Architecture change touching >3 files | Long-term consequence |
 | Public API change | User must own this |
 | Scope expansion | Not committed by user |
-| Data deletion, force push, irreversible ops | Cannot undo |
+| Irreversible ops (delete, force push) | Cannot undo |
 
 **Never:** restate intent, ask permission to start, confirm obvious decisions.
 
 ---
 
-## Task Brief (required before every task)
+## Task Brief (before every task)
 
 ```
 [Task Brief]
@@ -60,7 +45,7 @@ Risk: NONE | LOW: <detail> | HIGH: <detail>
 Action: proceeding | ⚠️ need input: <single question>
 ```
 
-HIGH risk → wait for input. NONE/LOW → proceed immediately after brief.
+HIGH → wait. NONE/LOW → proceed immediately.
 
 ---
 
@@ -68,9 +53,9 @@ HIGH risk → wait for input. NONE/LOW → proceed immediately after brief.
 
 | Track | Signals |
 |-------|---------|
-| `light` | Single file, obvious fix, no behavior change, no unknowns |
+| `light` | Single file, obvious fix, no behavior change |
 | `standard` | New feature, multi-behavior, some unknowns |
-| `heavy` | Architecture change, multi-system, security/scale, breaking change |
+| `heavy` | Architecture change, multi-system, security/scale, breaking |
 
 Default: `standard` when uncertain.
 
@@ -78,16 +63,16 @@ Default: `standard` when uncertain.
 
 ## Brainstorm Gate
 
-Suggest brainstorming only when ALL true:
+Suggest only when ALL true:
 - User doesn't know which direction to take
 - Different answers → fundamentally different specs
-- Not a spec detail question
 
 ```
-Bạn có muốn brainstorm trước để làm rõ hướng không? Tôi có thể bắt đầu ngay.
+Bạn có muốn brainstorm trước để làm rõ hướng không?
 ```
 
-User agrees → load `workflow:brainstorming`. User declines → go to spec-formation.
+Agree → load `workflow:brainstorming`, save output to `.workflow/brainstorm/<N>-<topic>.md`.
+Decline → go to spec formation.
 Never suggest more than once per session.
 
 ---
@@ -98,68 +83,52 @@ Never suggest more than once per session.
 [workflow:spec] Formation | Amendment — <slug>
 ```
 
-**New spec:** Load `workflow:skills/spec/formation.md` — follow it exactly.
-**Change locked spec:** Load `workflow:skills/spec/amendment.md` — follow it exactly.
+**New spec:** Load `workflow:skills/spec/formation.md`
+**Change locked spec:** Load `workflow:skills/spec/amendment.md`
+
+Spec lives at: `docs/specs/<slug>/spec.md`
 
 ---
 
 ## Phase: Task Breakdown
 
-**Light track → skip.** Go directly to Execute.
+**Light track → skip. Go directly to Execute.**
 
 ```
 [workflow:task-breakdown] Decomposing: <slug>
 ```
 
-Read once: `approved.md`, `PROJECT.md`, relevant codebase files.
+Read: `docs/specs/<slug>/spec.md`, `docs/PROJECT.md`, relevant codebase.
 
-**Task format:**
-```markdown
-### Task {N} — {title}
-**Spec ref:** FR-{N} / SC-{N}
-**Parallel:** yes | no
-**Depends on:** Task {N} | none
-
-#### What to build
-<one paragraph — behavior, not implementation>
-
-#### Files
-- Create: `path/to/file`
-- Modify: `path/to/existing:L10-L50`
-- Test: `path/to/test`
-
-#### Acceptance
-- [ ] <specific verifiable outcome>
-
-#### Steps  ← standard/heavy only
-1. Write failing test
-2. Run → confirm FAIL
-3. Implement minimal code
-4. Run → confirm PASS
-5. Commit: `type(scope): message`
-```
-
-Heavy track: add `#### Risk notes` per task.
-
-**Parallelization map** (standard/heavy):
-```markdown
-## Execution Order
-Sequential: Task 1 → Task 2
-Parallel group A (after Task 1): Task 3 [P], Task 4 [P]
-Sequential: Task 5 (integrates A)
-```
-
-Save to `.workflow/specs/<slug>/tasks.md`. Update STATE.md `phase: execute`.
+Create tasks using Claude Code task tool (TodoWrite). Each task:
 
 ```
-[workflow:task-breakdown] {N} tasks → tasks.md. Next: execute
+Title: Task N — <name>
+Body:
+  Spec ref: FR-N / SC-N
+  What to build: <one paragraph — behavior not implementation>
+  Files:
+    Create: path/to/file
+    Modify: path/to/existing:L10-L50
+    Test: path/to/test
+  Acceptance:
+    - [ ] specific verifiable outcome
+  Steps (standard/heavy):
+    1. Write failing test
+    2. Run → confirm FAIL
+    3. Implement minimal code
+    4. Run → confirm PASS
+    5. Commit: type(scope): message
 ```
 
-| Track | Behavior |
-|-------|----------|
-| `light` | 1–3 tasks, no steps, no parallelization map |
-| `standard` | Full format + steps + parallelization map |
-| `heavy` | Full format + dependency graph + risk notes |
+Heavy: add Risk notes per task.
+
+**Parallelization map** (standard/heavy): identify which tasks can run concurrently (no shared files, no dependencies).
+
+Announce:
+```
+[workflow:task-breakdown] {N} tasks created. Next: execute
+```
 
 ---
 
@@ -169,67 +138,60 @@ Save to `.workflow/specs/<slug>/tasks.md`. Update STATE.md `phase: execute`.
 [workflow:execute] Starting — <slug> | {N} tasks | track: <track>
 ```
 
-**Setup (once):** Read `approved.md` + `tasks.md` + relevant codebase. Cache everything — subagents receive content as text, not file references.
+**Setup (once):** Read `docs/specs/<slug>/spec.md` + relevant codebase. Cache — subagents get content as text, not file refs.
 
-**Per task loop:**
+**Per task:**
 
-1. Task Brief:
-```
-[workflow:execute] Task {N}/{total} — <title>
-[Task Brief]
-Plan: ...
-Risk: ...
-Action: proceeding | ⚠️ need input: ...
-```
+1. Task Brief (announce before starting)
 
-2. Dispatch `workflow:agents/implementer` with:
-   - `SPEC`: approved.md excerpt for this task
-   - `TASK`: full task text from tasks.md
-   - `CODEBASE`: relevant existing code, file structure, conventions
+2. Dispatch `workflow:agents/implementer`:
+   - SPEC: spec.md excerpt for this task
+   - TASK: full task text
+   - CODEBASE: relevant code, patterns, conventions
 
-   If implementer asks questions → answer completely → redispatch.
+   Implementer asks questions → answer → redispatch.
+   Implementer done → writes result to `.workflow/log/task-N.md` (SHA + what built).
 
 3. Review (by track):
-   - `light` → skip, self-review sufficient
-   - `standard/heavy` → dispatch `workflow:agents/spec-reviewer` (SPEC + TASK + COMMITS)
-     - ✅ → dispatch `workflow:agents/quality-reviewer` (COMMITS + CONVENTIONS + SCOPE: per-task)
-       - ✅ → task approved
-       - ❌ Critical/Important → dispatch new implementer with issues list → re-dispatch spec-reviewer
-       - ❌ Minor → note, proceed
-     - ❌ → dispatch new implementer with issues list → re-dispatch spec-reviewer
+   - `light` → self-review only
+   - `standard/heavy`:
+     - Dispatch `workflow:agents/spec-reviewer` (SPEC + TASK + COMMITS)
+       - ✅ → dispatch `workflow:agents/quality-reviewer` (COMMITS + CONVENTIONS + SCOPE: per-task)
+         - ✅ → approved
+         - ❌ Critical/Important → new implementer with issues → re-review
+         - ❌ Minor → note, proceed
+       - ❌ → new implementer with issues list → re-run spec-reviewer
+     - Reviewer writes result to `.workflow/log/review-N.md`
 
-4. Mark task `[x] done` in tasks.md. Update STATE.md. Next task.
+4. Mark task done in Claude Code task tool. Read log files when needed — don't hold all results in context.
 
-**Parallel tasks:** same [P]-group with no shared files → dispatch concurrently.
+**Parallel tasks:** same group, no shared files → dispatch concurrently.
 
 **All tasks done:**
 ```
-[workflow:execute] All {N} tasks implemented
+[workflow:execute] All {N} tasks complete
 ```
-Update STATE.md: `phase: review | next-action: final review then doc-sync`
 
 ---
 
 ## Phase: Final Review
 
-**Light:** skip. **Standard:** skip if low-risk + solid coverage. **Heavy:** required.
+**Light:** skip. **Standard:** skip if low-risk. **Heavy:** required.
 
 ```
 [workflow:review] ⏳ Final integration review
 ```
 
-Dispatch `workflow:agents/quality-reviewer` with:
-- `COMMITS`: all commits since task-breakdown
-- `CONVENTIONS`: from PROJECT.md
-- `SCOPE`: final integration
+Dispatch `workflow:agents/quality-reviewer`:
+- COMMITS: all commits since task-breakdown
+- CONVENTIONS: from docs/PROJECT.md
+- SCOPE: final integration
 
-Issues found → surface to user with description + recommendation before proceeding.
+Issues → surface to user before proceeding.
 
 ```
 [workflow:review] ✅ Final review complete
 ```
-
-Update STATE.md: `phase: doc-sync`
 
 ---
 
@@ -239,31 +201,10 @@ Update STATE.md: `phase: doc-sync`
 [workflow:doc-sync] Starting — <slug>
 ```
 
-Dispatch `workflow:agents/doc-syncer` with:
-- `SPEC_PATH`: `.workflow/specs/<slug>/approved.md`
-- `COMMITS`: all implementation commits
-- `TRACK`: from STATE.md
-
-Update STATE.md:
-```
-phase: done
-next-action: Run superpowers:finishing-a-development-branch
-```
-
----
-
-## STATE.md Format
-
-```
-phase: <spec|planning|execute|review|doc-sync|done>
-active-spec: <slug | none>
-track: <light|standard|heavy>
-next-action: <one sentence>
-blocked-by: <description | none>
-last-updated: YYYY-MM-DD
-```
-
-Update on every phase transition.
+Dispatch `workflow:agents/doc-syncer`:
+- SPEC_PATH: `docs/specs/<slug>/spec.md`
+- COMMITS: all implementation commits
+- TRACK: current track
 
 ---
 
@@ -273,7 +214,7 @@ Update on every phase transition.
 [workflow:<phase>] <Action> — <detail>
 ```
 
-Every phase entry, major step, and completion. User always knows what AI is doing.
+Every phase entry, major step, completion. User always knows what AI is doing.
 
 ---
 

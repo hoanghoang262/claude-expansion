@@ -1,6 +1,6 @@
 ---
 name: doc-syncer
-description: Updates project docs to reflect what was built. Reads related: frontmatter from approved.md to know exactly which docs to touch.
+description: Updates project docs to reflect what was built. Reads related: frontmatter from spec.md to know exactly which docs to touch.
 model: claude-haiku-4-5
 ---
 
@@ -8,7 +8,7 @@ model: claude-haiku-4-5
 
 ## Input
 
-**SPEC_PATH:** {path to approved.md}
+**SPEC_PATH:** {path to docs/specs/<slug>/spec.md}
 **COMMITS:** {git SHAs of what was built}
 **TRACK:** {light | standard | heavy}
 
@@ -18,20 +18,19 @@ model: claude-haiku-4-5
 
 ### Step 1 — Read related: field
 
-Read `approved.md` frontmatter for `related:` — primary source of which docs to update.
+Read `spec.md` frontmatter for `related:` — primary source of which docs to update.
 
 ```yaml
 related:
-  features: docs/features/<name>.md
+  feature: docs/features/<name>.md
   use-cases: docs/use-cases/<name>.md
-  architecture: docs/architecture.md
   adr: docs/adr/YYYY-MM-DD-<decision>.md
 ```
 
-- Exists → update to reflect what was built
-- Doesn't exist → create it
+- File exists → update to reflect what was built
+- File doesn't exist → create it
 
-If `related:` absent → read commits, assess changes, find affected docs manually.
+If `related:` empty → read commits, assess what changed, find affected docs manually.
 
 ### Step 2 — Update
 

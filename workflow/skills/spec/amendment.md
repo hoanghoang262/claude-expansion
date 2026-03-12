@@ -1,6 +1,6 @@
 ---
 name: spec/amendment
-description: The only way to change a locked spec. Requires explicit user approval.
+description: The only way to change a locked spec. Requires explicit user approval. Edit directly, git is the audit trail.
 ---
 
 # Spec Amendment
@@ -9,7 +9,7 @@ description: The only way to change a locked spec. Requires explicit user approv
 [workflow:spec-amendment] Amendment requested
 ```
 
-Never edit `approved.md` directly. Never proceed without user approval.
+Never change `spec.md` without this process. Never self-approve.
 
 ---
 
@@ -30,48 +30,42 @@ Never edit `approved.md` directly. Never proceed without user approval.
 ```
 [Spec Amendment Request]
 
-Change: <specific section + current text>
+Section: <which section>
+Current: <exact current text>
 Proposed: <new text>
 Reason: <discovery | user request | new constraint>
+
 Blast radius:
-  FRs affected: <list or "none">
-  SCs affected: <list or "none">
-  Tasks affected: <list or "none">
-  Entities changed: <list or "none">
-  Assumptions invalidated: <list or "none">
+  FRs affected: <list or none>
+  SCs affected: <list or none>
+  Tasks affected: <list or none>
+  Assumptions invalidated: <list or none>
 ```
 
 ### Step 2 — Get approval
 
 ```
-Approve to continue, or reject to proceed with current spec.
+Approve to apply, or reject to proceed with current spec.
 ```
 
-"Ok" or "yes" counts as approval. Do not proceed until explicit approval.
+"Ok" or "yes" = approved. Do not proceed until explicit approval.
 
 ### Step 3 — Apply
 
-1. Edit `approved.md` — update relevant section
-2. Add amendment record at bottom:
+1. Edit `docs/specs/<slug>/spec.md` directly — update the relevant section
+2. Reassess tasks — update or add tasks as needed, flag completed tasks now wrong
+3. Commit:
+```
+spec(<slug>): amend <section> — <what changed>
 
-```markdown
-## Amendments
-
-### Amendment {N} — YYYY-MM-DD
-**Changed:** <section>
-**From:** <original>
-**To:** <new>
-**Reason:** <why>
-**Approved:** yes
+<one sentence why: discovery / user request / new constraint>
+Blast radius: <FRs/SCs/tasks affected or "none">
 ```
 
-3. Assess `tasks.md` impact — update or add tasks. Flag completed tasks now wrong.
-4. Update STATE.md: `next-action: Resume execute with amended spec`
-5. Announce:
-
+4. Announce:
 ```
-[workflow:spec-amendment] approved.md updated
-Tasks affected: <list or "none">
+[workflow:spec-amendment] Applied
+Tasks affected: <list or none>
 Resuming: <next action>
 ```
 
@@ -79,7 +73,6 @@ Resuming: <next action>
 
 ## Hard rules
 
-- Never edit `approved.md` without this process
-- Never self-approve
 - One amendment at a time
 - If amendment invalidates completed work → surface explicitly before proceeding
+- Git diff is the amendment record — no need to log inside the file

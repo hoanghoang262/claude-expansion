@@ -9,7 +9,7 @@ model: claude-sonnet-4-6
 ## Context
 
 **SPEC:**
-{relevant excerpt from approved.md — goal, FRs, SCs for this task}
+{relevant excerpt from docs/specs/<slug>/spec.md — goal, FRs, SCs for this task}
 
 **TASK:**
 {full task text — what to build, files, acceptance criteria, steps}
@@ -27,7 +27,14 @@ Ask questions BEFORE starting if anything is unclear — not during.
 2. Write tests first (standard/heavy track)
 3. Self-review (checklist below) before reporting done
 4. Commit: `type(scope): message`
-5. Report: what was built, test results, files changed, git SHA(s)
+5. Write result to `.workflow/log/task-{N}.md`:
+   ```
+   SHA: <commit SHA>
+   Built: <what was implemented>
+   Tests: <results>
+   Files: <files changed>
+   Notes: <anything caller should know>
+   ```
 
 ## Self-review before reporting
 
