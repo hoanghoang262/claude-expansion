@@ -1,93 +1,28 @@
 # Review Model
 
-Review is not a single gate at the end of delivery. It is structured across three levels, each checking for different things.
+Three layers. Issues caught at smallest scope = cheapest to fix.
 
----
+## Layer 1 — Per Task
 
-## Why Multi-Layer Review
+After each task. Checks: acceptance criteria met, spec compliant, edge cases handled, tests sufficient.
 
-A single final review catches integration issues but misses task-level defects early. Catching problems late is expensive — the work must be unwound across multiple tasks.
+**Light:** subagent self-review only.
+**Standard/Heavy:** separate spec-compliance reviewer subagent, then code-quality reviewer subagent.
 
-By reviewing at each level, issues are caught at the smallest possible scope, where they are cheapest to fix.
+## Layer 2 — Per Group
 
----
+After a cluster of tasks forming a meaningful capability. Checks: tasks integrate correctly, behavior consistent end-to-end, no gaps between individually-passing tasks.
 
-## Layer 1 — Task Review
+**Standard/Heavy only.**
 
-**When:** After each task is completed by its assigned agent.
+## Layer 3 — Final Integration
 
-**Checks:**
-- Does the implementation satisfy the task's verification criteria?
-- Is the code consistent with the approved spec for this section?
-- Are edge cases handled?
-- Are tests sufficient for this task's scope?
-- Are relevant docs updated?
+After all tasks. Checks: full implementation delivers spec, no regressions, all docs updated.
 
-**Owner:** The executing agent performs self-review. For higher-risk tasks, a separate review agent is assigned.
-
-**Outcome:** Task is marked DONE or returned with specific issues to fix.
-
----
-
-## Layer 2 — Group Review
-
-**When:** After a cluster of tasks that together form a meaningful capability or workflow.
-
-**Checks:**
-- Do the individual tasks integrate correctly end-to-end?
-- Is the behavior consistent across the full capability?
-- Are there gaps between tasks that individually passed but collectively miss something?
-- Does the combined result match the capability described in the approved spec?
-
-**Owner:** Orchestrator, potentially with a dedicated review agent for large groups.
-
-**Outcome:** Group is approved to move to integration, or specific tasks are flagged for rework.
-
----
-
-## Layer 3 — Final Integration Review
-
-**When:** After all tasks are complete and the full change is assembled.
-
-**Checks:**
-- Does the complete implementation satisfy the approved spec?
-- Are there regression risks introduced by this change?
-- Is the system internally consistent after this change?
-- Are all required docs updated and accurate?
-- Are there any issues that need to be escalated to the user before delivery?
-
-**Owner:** Orchestrator, with a full integration review perspective.
-
-**Outcome:** Change is approved for delivery, or specific issues are raised. Significant issues are escalated to the user with a clear explanation and recommendation.
-
----
-
-## Review Is Not Perfection-Seeking
-
-The purpose of review is to verify that the change does what it was supposed to do, within the agreed scope, without introducing new problems.
-
-Review does not:
-- Expand scope
-- Introduce new requirements
-- Refactor work that was not in scope
-- Block delivery over style preferences
-
-If review discovers something genuinely important that was not in the approved spec, it surfaces it as a separate finding — not as a blocker to the current delivery.
-
----
+**Light:** skip. **Standard:** optional if coverage solid. **Heavy:** required.
 
 ## Escalation
 
-When a review finds something that:
-- Changes the scope of the approved spec
-- Reveals a design flaw in the foundation
-- Introduces unexpected long-term risk
-- Cannot be resolved without a user decision
+If review finds: spec scope change needed, design flaw, unexpected long-term risk, or decision requiring user judgment → escalate with: what was found, why it matters, recommendation, request for decision.
 
-...the orchestrator escalates to the user with:
-1. A clear description of what was found
-2. Why it matters
-3. A specific recommendation or set of options
-4. A request for a decision
-
-Escalation is not failure — it is the review system working correctly.
+Review does not expand scope, introduce new requirements, or block on style.
