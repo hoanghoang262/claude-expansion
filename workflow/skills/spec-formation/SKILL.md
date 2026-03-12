@@ -1,12 +1,12 @@
 ---
 name: spec-formation
-description: Transform clear intent into an approved spec. Draft immediately, resolve gaps inline, lock on approval.
+description: Transform intent into approved spec. Draft immediately, clarify blocking gaps only, lock on approval.
 ---
 
 # Spec Formation
 
-Own the full journey from intent to locked contract.
-Draft first → mark gaps inline → triage and resolve → validate → approve → lock.
+**Two phases: Clarify → Lock.**
+Draft first. Mark gaps inline. Ask only what blocks the contract.
 
 ---
 
@@ -16,9 +16,9 @@ Draft first → mark gaps inline → triage and resolve → validate → approve
 |-------|---------|
 | `light` | Single behavior, obvious scope, no data model, no integration |
 | `standard` | New feature, multi-behavior, some unknowns |
-| `heavy` | Architecture change, multi-system, security/scale/compliance concerns |
+| `heavy` | Architecture change, multi-system, security/scale/compliance |
 
-State the track before proceeding. It controls which sections are required and how deep to go.
+State track before proceeding.
 
 ---
 
@@ -26,18 +26,26 @@ State the track before proceeding. It controls which sections are required and h
 
 1. `.workflow/specs/<slug>/idea.md` — brainstorm summary if exists
 2. `.workflow/specs/<slug>/working.md` — previous draft if in progress
-3. `.workflow/PROJECT.md` — project constraints, tech stack, key decisions
-
-Note any PROJECT.md constraints that apply before writing.
+3. `.workflow/PROJECT.md` — constraints, tech stack, key decisions
 
 ---
 
-## Step 2 — Draft
+## PHASE 1: CLARIFY
 
-Write the spec immediately in `working.md`. Do not ask questions before drafting.
-Where information is missing, write `[NEEDS CLARIFICATION: <specific question>]` inline.
+```
+[workflow:spec-formation] Phase 1 — Clarifying: <slug>
+```
 
-**Spec structure — include sections required for the track:**
+### Draft immediately
+
+Write `working.md` now. Do not ask questions before drafting.
+
+**If prompt is unclear:** Draft with best interpretation. Mark your interpretation as assumption.
+**Only exception:** Prompt so vague no FR can be written → ask 1 question minimum needed.
+
+Where information is missing, write `[GAP: <specific question>]` inline.
+
+### Spec structure
 
 ```markdown
 # Spec: <slug>
@@ -57,141 +65,101 @@ Out of scope:
 
 ## User Stories          ← standard/heavy only
 ### Story 1 — <title> (P1)
-<plain language — who does what and why>
-Acceptance scenarios:
-- Given <state>, when <action>, then <outcome>
+<who does what and why>
+Acceptance:
 - Given <state>, when <action>, then <outcome>
 
 ## Functional Requirements
 - FR-001: System MUST <testable behavior>
 - FR-002: Users MUST be able to <action>
-[NEEDS CLARIFICATION: <question>]
+[GAP: <question>]
 
 ## Key Entities          ← when data is involved
-- <Entity>: <what it is, key attributes, relationships, state transitions>
+- <Entity>: <what it is, key attributes, relationships>
 
-<!-- If 2+ entities with relationships exist (standard/heavy), add ER diagram: -->
-```mermaid
-erDiagram
-    EntityA ||--o{ EntityB : "relationship"
-    EntityB {
-        type field
-    }
-```
+## Assumptions
+- A-001: <assumed true> — if wrong, impacts: <FR-N>
 
-## Assumptions          ← non-trivial things assumed to be true without verifying
-- A-001: <we assume X is true> — if wrong, impacts: <FR-001 / EntityName>
-- A-002: <we assume Y is true> — if wrong, impacts: <SC-002>
-
-## Non-Functional        ← heavy only, or when explicitly required
-- Performance: <measurable target, e.g., p95 < 200ms>
+## Non-Functional        ← heavy only or explicitly required
+- Performance: <measurable target>
 - Security: <specific constraint>
-- Scale: <volume/load assumption>
-- Observability: <logging/metrics requirements>
-- Compliance: <regulatory constraints if any>
 
 ## Interaction & UX      ← when UI is involved
 - <critical user journey>
 - Error states: <what user sees when X fails>
-- Empty states: <what user sees with no data>
 
 ## Integration           ← when external systems involved
 - <System>: <what we depend on, failure mode>
 
 ## Edge Cases & Errors   ← standard/heavy only
 - What happens when <boundary condition>?
-- How does system handle <failure scenario>?
 
 ## Success Criteria
-- SC-001 (covers FR-001, FR-002): <measurable outcome — no adjectives without numbers>
-- SC-002 (covers FR-003): <measurable outcome>
+- SC-001 (covers FR-001): <measurable outcome>
 
 ## Open Items
-- <item deferred to planning or implementation — note which phase>
+- <item deferred to planning/implementation>
 ```
 
-**FR writing rule — WHAT not HOW:**
+**FR rule — WHAT not HOW:**
 - ✅ `System MUST notify users when payment fails`
 - ❌ `System MUST send Stripe webhook on payment failure`
-- ✅ `Users MUST be able to recover access without contacting support`
-- ❌ `Implement password reset via email token with 1hr expiry`
 
----
+### Triage gaps
 
-## Step 3 — Triage gaps
+For each `[GAP]`:
 
-Collect all `[NEEDS CLARIFICATION]` markers. For each, decide:
+| Decision | When |
+|----------|------|
+| **Ask now** | Answer changes FR, SC, entity shape, or scope boundary |
+| **Defer to Open Items** | Tech choices, implementation edge cases |
+| **Assume + note** | Low stakes, reasonable default exists |
 
-| Decision | Criteria |
-|----------|----------|
-| **Ask now** | Answer would change FR, SC, entity shape, or scope boundary |
-| **Defer to Open Items** | Better answered during planning (tech choices) or implementation (edge cases) |
-| **Assume + note** | Low stakes, reasonable default exists — state assumption inline |
+### Ask blocking gaps
 
-**Priority formula:** ask what has high impact on architecture, data modeling, test design, or acceptance criteria first.
+Group independent questions in one message. Max 5 per session.
 
----
-
-## Step 4 — Ask
-
-Group all independent questions into **one message per round**.
-Dependent questions (B needs A's answer) come in separate rounds. Max **5 questions** per session.
-
-**Format per question:**
 ```
-**Q{N}: <question>**
-> Recommended: **{option}** — <one-sentence reason>
+**Q1: <question>**
+> Recommended: **<option>** — <one-sentence reason>
 
 | Option | Description |
 |--------|-------------|
 | A | ... |
 | B | ... |
-| C | ... |
 
-Reply A/B/C, "yes" to accept recommendation, or a short custom answer.
+Reply A/B, "yes" to accept recommendation, or custom answer.
 ```
 
-After each answer:
-1. Replace `[NEEDS CLARIFICATION]` with the clarified detail
-2. Update the affected section
-3. Log the resolution in `## Clarifications`:
+After each answer: replace `[GAP]` with resolved detail, log in `## Clarifications`.
 
-```markdown
-## Clarifications
-
-### Session YYYY-MM-DD
-- Q: <question> → A: <answer> — applied to: <section name>
-```
-
-If a clarification invalidates an earlier statement, replace it. Never duplicate.
-
-After all questions encoded, **do one more gap scan** — new answers sometimes reveal new gaps.
-If new gaps found: one more round (max 3 total). If still gaps after 3 rounds: move remaining to Open Items.
+Run one more gap scan after answers — new answers can reveal new gaps. Max 3 rounds; remaining gaps → Open Items.
 
 ---
 
-## Step 5 — Self-validate
+## PHASE 2: LOCK
 
-Before presenting for approval:
+```
+[workflow:spec-formation] Phase 2 — Locking: <slug>
+```
+
+### Self-validate before presenting
 
 ```
 [ ] Track stated
-[ ] No [NEEDS CLARIFICATION] remain (or moved to Open Items with rationale)
-[ ] Every FR: MUST + testable behavior, no HOW details, no vague verbs
-[ ] Every SC: measurable — numbers, not adjectives ("fast" → "p95 < 500ms")
-[ ] Every FR maps to at least one SC (no untestable requirement)
-[ ] Scope: both in-scope AND out-of-scope stated explicitly
-[ ] User stories have Given/When/Then (standard/heavy)
-[ ] NFR and UX sections present if track requires
+[ ] No [GAP] remain (or moved to Open Items with rationale)
+[ ] Every FR: MUST + testable, no HOW details
+[ ] Every SC: measurable — numbers not adjectives
+[ ] Every FR maps to at least one SC
+[ ] Scope: in AND out stated explicitly
+[ ] Stories have Given/When/Then (standard/heavy)
 [ ] PROJECT.md constraints respected
 [ ] Light track: fits on one screen
 ```
 
----
+### Present for approval
 
-## Step 6 — Present & approve
-
-**Light track** — show a compact summary, not the full spec:
+**Light track:**
 ```
 **Spec: <slug>** (light)
 Goal: <one sentence>
@@ -199,63 +167,66 @@ Will do: <2-3 bullet FRs>
 Won't do: <scope boundary>
 Done when: <SC-001>
 
-Looks right? Reply "yes", "ok", or just give me the next task to proceed.
+Looks right? Reply "yes" or give me the next task.
 ```
-Implicit approval: any affirmative reply or a follow-on task message counts.
+Implicit approval: any affirmative reply counts.
 
-**Standard/Heavy track** — show the full spec:
+**Standard/Heavy:**
 ```
-Here's the spec for review.
-Clarifications resolved: {N}. Deferred to Open Items: {list}.
+Spec ready for review.
+Resolved: {N} gaps. Deferred: {list}.
 
 Approve to lock, or tell me what to change.
 ```
-Requires explicit approval. Revise until approved. Never lock without it.
+Requires explicit approval.
 
----
-
-## Step 7 — Lock
+### Lock
 
 On approval:
 1. Copy `working.md` → `approved.md`, set `Status: approved`
 2. Delete `working.md`
-3. Update `.workflow/STATE.md`:
+3. Update `.workflow/STATE.md`
 
+**Light:**
+```
+phase: execute
+active-spec: <slug>
+track: light
+next-action: Begin execute directly (skip task-breakdown)
+```
+
+**Standard/Heavy:**
 ```
 phase: planning
 active-spec: <slug>
-track: <track>
+track: <standard|heavy>
 next-action: Run task-breakdown on approved.md
-blocked-by: none
-last-updated: YYYY-MM-DD
 ```
 
 4. Announce:
 ```
-[Spec locked] .workflow/specs/<slug>/approved.md
-Clarifications: {N} resolved, {M} deferred to Open Items
+[workflow:spec-formation] Locked → .workflow/specs/<slug>/approved.md
+Gaps resolved: {N} | Deferred: {M}
 Next: task-breakdown
 ```
 
 ---
 
-## Memory rule
+## Memory
 
 | File | Lifecycle |
 |------|-----------|
 | `idea.md` | Persistent — never delete |
-| `working.md` | Temporary — delete after `approved.md` created |
-| `approved.md` | Permanent locked contract — change only via `spec-amendment` |
+| `working.md` | Temp — delete after `approved.md` created |
+| `approved.md` | Permanent locked contract — change only via spec-amendment |
 | `STATE.md` | Updated on every phase transition |
 
 ---
 
 ## Scale
 
-| Track | Required sections | Clarification depth |
+| Track | Sections required | Clarification depth |
 |-------|-------------------|---------------------|
-| `light` | Goal + FRs + SC | 1–2 questions max, skip taxonomy |
+| `light` | Goal + FRs + SC | 1–2 questions max |
 | `standard` | + Scope + Stories + Entities + Edge Cases | Full triage, up to 5 questions |
-| `heavy` | All sections | Full triage + NFR + Integration + 3 rounds if needed |
-
-**Never pad a light spec to look like a heavy one.**
+| `heavy` | All sections | Full triage + NFR + Integration + 3 rounds |
