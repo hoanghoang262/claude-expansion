@@ -1,37 +1,60 @@
 ---
 name: execute
-description: Implement tasks from tasks.md using fresh subagents. Each task gets full context, two-stage review, and a commit before moving on.
+description: Implement tasks from tasks.md using fresh subagents. Task Brief before each task. Two-stage review for standard/heavy. Commit per task.
 ---
 
 # Execute
 
-Implement the approved spec task by task.
-Fresh subagent per task. Review before moving on. Update state as you go.
+```
+[workflow:execute] Starting execution — <slug> | {N} tasks | track: <track>
+```
 
 ---
 
 ## Step 0 — Load context (once)
 
-Read these files once before dispatching any subagent. Never make subagents read them.
+Read once. Never make subagents read these files.
 
-1. `approved.md` — the spec (what must be built)
+1. `approved.md` — what must be built
 2. `tasks.md` — all tasks with full text
-3. Current codebase state — enough to give subagents accurate context
+3. Current codebase — enough to give subagents accurate context
 
 Cache everything. Subagents receive context as text, not file references.
 
 ---
 
-## Step 1 — Pick next task
+## Step 1 — Task Brief (before every task)
 
-From `tasks.md`, pick the next unblocked task in order.
-Parallel-safe tasks (`[P]` in same group) can be dispatched concurrently — but never dispatch two tasks that touch the same files.
+Before dispatching any subagent, output:
+
+```
+[workflow:execute] Task {N}/{total} — <title>
+
+[Task Brief]
+Plan: <1-2 sentences — what + how>
+Risk: NONE | LOW: <detail> | HIGH: <detail>
+Action: proceeding | ⚠️ need input: <single question>
+```
+
+HIGH risk → wait for user input before dispatching.
+LOW/NONE → dispatch immediately after brief.
 
 ---
 
-## Step 2 — Dispatch implementer subagent
+## Step 2 — Pick next task
 
-Give the subagent everything it needs upfront:
+From `tasks.md`, pick next unblocked task.
+Parallel-safe tasks (`[P]` in same group) can be dispatched concurrently — never dispatch two tasks touching the same files.
+
+---
+
+## Step 3 — Dispatch implementer subagent
+
+```
+[workflow:execute] ⏳ Task {N} — dispatching implementer
+```
+
+Give subagent everything upfront:
 
 ```
 You are implementing Task {N}: {title}
@@ -46,100 +69,117 @@ CODEBASE CONTEXT:
 {relevant existing code, file structure, conventions}
 
 Instructions:
-- Follow the steps in the task exactly
-- Write tests first (standard/heavy track)
+- Follow task steps exactly
+- Write tests first (standard/heavy)
 - Self-review before reporting done
 - Commit when complete: `type(scope): message`
 - Ask questions BEFORE starting, not during
 ```
 
-If subagent asks questions → answer completely, then redispatch. Never rush them into implementation.
+If subagent asks questions → answer completely, then redispatch.
 
 ---
 
-## Step 3 — Review
+## Step 4 — Review
 
-**Light track:** Self-review from subagent is sufficient. Skip formal review.
+**Light:** Self-review from subagent is sufficient.
 
-**Standard/Heavy track:** Two-stage review after each task.
+**Standard/Heavy:** Two-stage review after each task.
 
 ### Stage 1 — Spec compliance
 
-Dispatch a fresh reviewer subagent:
+```
+[workflow:execute] ⏳ Task {N} — spec compliance review
+```
+
+Dispatch fresh reviewer:
 ```
 Review Task {N} for spec compliance.
 
-SPEC (approved.md excerpt): {text}
-TASK definition: {text}
-Commits to review: {git SHAs}
+SPEC: {approved.md excerpt}
+TASK: {task definition}
+Commits: {git SHAs}
 
 Check:
-- Does implementation match every acceptance criterion?
-- Anything built that's NOT in the spec?
-- Any spec requirement missing from the implementation?
+- Every acceptance criterion met?
+- Anything built NOT in spec?
+- Any spec requirement missing?
 
 Output: ✅ Compliant | ❌ Issues: [list]
 ```
 
-If issues → implementer subagent fixes → Stage 1 re-review.
-Never proceed to Stage 2 while Stage 1 has open issues.
+Issues → implementer fixes → Stage 1 re-review. Never proceed to Stage 2 with open Stage 1 issues.
 
 ### Stage 2 — Code quality
 
-Dispatch a fresh reviewer subagent:
+```
+[workflow:execute] ⏳ Task {N} — code quality review
+```
+
+Dispatch fresh reviewer:
 ```
 Review Task {N} for code quality.
 
-Commits to review: {git SHAs}
-Project conventions: {from PROJECT.md}
+Commits: {git SHAs}
+Conventions: {from PROJECT.md}
 
 Check:
-- Tests exist and are meaningful (not just passing)
+- Tests exist and meaningful
 - No magic numbers, unclear names, dead code
-- No unnecessary complexity or premature abstraction
+- No unnecessary complexity
 - Follows project conventions
 
-Output: ✅ Approved | Issues: [Critical | Important | Minor] [list]
+Output: ✅ Approved | Issues: [Critical | Important | Minor]
 ```
 
-Critical/Important issues → implementer fixes → Stage 2 re-review.
-Minor issues → note, proceed.
+Critical/Important → implementer fixes → re-review.
+Minor → note, proceed.
 
 ---
 
-## Step 4 — Mark complete + continue
+## Step 5 — Mark complete + continue
 
-After both review stages pass (or self-review for light):
+After review passes:
 
-Update `tasks.md` — mark task as `[x] done`.
+```
+[workflow:execute] ✅ Task {N}/{total} complete
+```
+
+Mark `[x] done` in `tasks.md`.
 
 Update STATE.md:
 ```
 next-action: Task {N+1} — {title}
 ```
 
-Move to next task. Repeat until all tasks done.
+Move to next task. Repeat until all done.
 
 ---
 
-## Step 5 — Final review + handoff
+## Step 6 — Final review + handoff
 
-After all tasks complete:
-
-Dispatch one final reviewer across the full implementation:
 ```
-Review the complete implementation against the approved spec.
+[workflow:execute] All {N} tasks complete — final review
+```
+
+**Light:** Skip — per-task self-review sufficient.
+**Standard:** Skip if tasks were low-risk and test coverage solid.
+**Heavy:** Required.
+
+Final review prompt:
+```
+Review complete implementation against approved spec.
 
 approved.md: {full text}
 All commits since task-breakdown: {SHAs}
 
-Check end-to-end: does the full implementation deliver the spec?
+Check: does full implementation deliver the spec?
 Any integration issues between tasks?
 ```
 
 Then:
 ```
-[Execute complete] All {N} tasks done.
+[workflow:execute] Complete — {N} tasks done
 Next: doc-sync → finishing-a-development-branch
 ```
 
