@@ -1,44 +1,43 @@
 ---
 name: brainstorming
-description: Facilitate technical direction alignment. AI coaches, not generates — ideas come from the user.
+description: Optional branch for strategic ambiguity. Use when user doesn't know which direction to take — not for requirement gaps.
 ---
 
 # Brainstorming
 
-Align on direction before writing any spec.
-Your role: **coach and draw out**, not generate. Every idea must originate from the user.
+**Trigger:** Strategic ambiguity only — user unsure which direction, not just missing details.
+**Not triggered:** User knows what they want but lacks specifics → use spec-formation directly.
 
 ---
 
-## Opening
-
-Check `.workflow/specs/` for any existing `idea.md`:
-- Found → "I see a previous brainstorm on `<topic>`. Continue it or start fresh?"
-- Not found → announce start and confirm topic + goal in one line.
+## On Entry
 
 ```
-[Start brainstorm] Topic: <topic> | Goal: <what we want to decide>
+[workflow:brainstorming] Starting — Topic: <topic>
 ```
+
+Check `.workflow/specs/` for existing `idea.md`:
+- Found → "Previous brainstorm on `<topic>` exists. Continue or start fresh?"
+- Not found → proceed to Phase 1
 
 ---
 
 ## Phase 1 — Understand
 
 One question per message. No proposals yet.
-Internally note tensions, contradictions, unstated priorities — surface them only when you have enough context.
+Note tensions, contradictions, unstated priorities — surface only when you have enough context.
 
-**Useful questions:**
+Useful probes:
 - "What problem are you actually solving?"
-- "Who is this for, and what do they struggle with today?"
-- "What does success look like concretely — in 3 months?"
+- "What does success look like in 3 months — concretely?"
 - "What have you already tried or ruled out, and why?"
 - "What's the riskiest assumption in this direction?"
 - "What would make you abandon this approach entirely?"
 
-**Checkpoint every 3–4 exchanges:**
+Checkpoint every 3–4 exchanges:
 ```
-We've explored: <brief summary of what emerged>
-→ Keep digging deeper, or ready to look at approaches?
+Explored so far: <brief summary>
+→ Keep digging, or ready to look at approaches?
 ```
 
 Default: keep exploring unless user signals readiness.
@@ -47,11 +46,11 @@ Default: keep exploring unless user signals readiness.
 
 ## Phase 2 — Propose
 
-Once the core need and constraints are clear, offer **2–3 approaches** with explicit trade-offs.
-Lead with your recommendation — not neutrally, with reasoning.
+Once core need and constraints are clear, offer **2–3 approaches** with trade-offs.
+Lead with recommendation — not neutrally, with reasoning.
 
 ```
-**Recommended: Option A** — <one-sentence reason why this fits best>
+**Recommended: Option A** — <one-sentence reason>
 
 | Option | Approach | Strength | Trade-off |
 |--------|----------|----------|-----------|
@@ -60,58 +59,51 @@ Lead with your recommendation — not neutrally, with reasoning.
 | C     | ...      | ...      | ...       |
 ```
 
-Let the user push back. Revise without defending. An option can be rejected, refined, or combined.
+Let user push back. Revise without defending.
 Stay in Phase 2 until direction is genuinely locked — not just accepted.
 
 ---
 
 ## Phase 3 — Stress-test *(optional)*
 
-After direction is chosen, analyze its specific risks and suggest the **3 most relevant** methods.
-Do not show a fixed list — pick what actually fits *this specific direction and its risks*.
+After direction is chosen, pick **3 most relevant** methods for this specific direction:
 
 ```
 Direction locked: <one-sentence summary>
 
-To stress-test this before we write a spec:
-  A) <Method> — <why it fits this specific direction>
-  B) <Method> — <why it fits this specific direction>
-  C) <Method> — <why it fits this specific direction>
-  D) Skip — direction is solid, move to spec
+Stress-test options:
+  A) <Method> — <why it fits this direction>
+  B) <Method> — <why it fits this direction>
+  C) <Method> — <why it fits this direction>
+  D) Skip — direction is solid
 
-Which would you like?
+Which?
 ```
 
-**Methods available** (pick the most relevant 3, not all):
-`Pre-mortem` · `Inversion` · `First Principles` · `Red Team` · `Constraint Removal` ·
-`Stakeholder Mapping` · `Analogical Reasoning` · `Socratic Questioning` · `Threat Modeling` ·
-`Assumption Surfacing` · `Second-Order Effects` · `Edge Case Hunting`
+Available: `Pre-mortem` · `Inversion` · `Red Team` · `Assumption Surfacing` · `Threat Modeling` · `Second-Order Effects` · `Edge Case Hunting` · `First Principles`
 
-Apply the chosen method. Surface risks or gaps. Let user respond. Repeat if needed.
-
-Skip Phase 3 for light tasks or when direction is clearly solid.
+Skip Phase 3 for light tasks or clearly solid directions.
 
 ---
 
 ## Closing
 
 When user approves direction:
+
 ```
-[End brainstorm]
+[workflow:brainstorming] Complete
 
 Goal: <one sentence>
 Approach: <chosen option + core reason>
 Constraints locked: <list or "none">
-Key decisions made: <list>
-Explicitly ruled out: <list or "none">
-Deferred to spec: <open questions to resolve during spec-formation>
+Key decisions: <list>
+Ruled out: <list or "none">
+Deferred to spec: <open questions>
 
 Next: spec-formation
 ```
 
-**Output rule:**
-- Short (direction clear, few decisions) → summary in chat only
-- Long (complex system, many locked decisions) → save to `.workflow/specs/<slug>/idea.md`
+Save to `.workflow/specs/<slug>/idea.md` only if session was long or decisions are complex.
 
 ---
 
@@ -119,6 +111,5 @@ Next: spec-formation
 
 - One question per message in Phase 1
 - No implementation details before direction is locked
-- Checkpoint every 3–4 exchanges — don't let Phase 1 run indefinitely
-- Don't save files during back-and-forth — only the final summary if long
-- Light tasks: Phase 1 max 3 questions, skip Phase 3
+- Checkpoint every 3–4 exchanges
+- Light tasks: max 3 questions in Phase 1, skip Phase 3
