@@ -26,7 +26,7 @@ Goal: draw out the user's real problem, constraints, and mental model. No propos
 - Prioritize open questions — let user describe freely rather than answer yes/no
 - Group related questions together (2–4 per message) — avoid one-at-a-time drip
 - Skip trivial or obvious questions — ask only what genuinely changes understanding
-- If research would expand the picture, do it inline and share findings as input to discussion
+- If research would expand the picture → launch `workflow:agents/researcher` with the specific question, share findings as input to discussion
 - Surface counter-arguments and opposing views with specific evidence — expand options, don't narrow
 
 Useful probes:
