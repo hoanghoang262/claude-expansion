@@ -65,7 +65,7 @@ After implementer commits:
 ```
 
 **Light:** skip — self-review sufficient. Mark task done, continue.
-**Standard/Heavy:** invoke `workflow:review` for this task, wait for result.
+**Standard/Heavy:** load `workflow:review/per-task` for this task, wait for result.
 
 - Review ✅ → mark `[x] done` in `tasks.md`, update STATE.md, next task
 - Review ❌ → implementer fixes, re-invoke `workflow:review`

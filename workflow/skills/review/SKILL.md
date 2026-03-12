@@ -1,23 +1,15 @@
 ---
 name: review
-description: Review implemented tasks — spec compliance first, then code quality. Also runs final integration review after all tasks complete.
+description: Review skills index. Callers load sub-files directly — no routing needed.
 ---
 
 # Review
 
-Two modes. Load the relevant guide:
+Callers load directly — do not route through this file.
 
-| Mode | When | Guide |
-|------|------|-------|
-| Per-task review | After each task is implemented | `./per-task.md` |
-| Final integration review | After all tasks complete | `./final.md` |
+| Sub-skill | Loaded by | When |
+|-----------|-----------|------|
+| `./per-task.md` | `workflow:execute` | After each task is implemented |
+| `./final.md` | `workflow:orchestrator` | After all tasks complete |
 
-**Order is strict:** spec compliance must pass before quality review runs.
-
-```
-[workflow:review] Starting — Task {N} | mode: per-task
-```
-or
-```
-[workflow:review] Starting — final integration review
-```
+Supporting prompts: `./spec-reviewer.md` · `./quality-reviewer.md`
