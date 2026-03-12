@@ -134,8 +134,8 @@ Then: use `superpowers:finishing-a-development-branch`.
 [workflow:spec] Formation | Amendment — <slug>
 ```
 
-**New spec:** Load `workflow:skills/spec/formation.md`
-**Change locked spec:** Load `workflow:skills/spec/amendment.md`
+**New spec:** Load `./spec-formation.md`
+**Change locked spec:** Load `./spec-amendment.md`
 
 Spec lives at: `docs/specs/<slug>/spec.md`
 
