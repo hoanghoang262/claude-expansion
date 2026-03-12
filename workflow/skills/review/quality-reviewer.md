@@ -1,5 +1,5 @@
 ---
-name: execute/quality-reviewer
+name: review/quality-reviewer
 description: Prompt template for code quality reviewer subagent. Runs after spec compliance is confirmed.
 ---
 

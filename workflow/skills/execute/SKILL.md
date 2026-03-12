@@ -1,12 +1,12 @@
 ---
 name: execute
-description: Implement tasks from tasks.md using fresh subagents. Task Brief before each task. Two-stage review for standard/heavy. Commit per task.
+description: Implement tasks from tasks.md. One fresh subagent per task. Task Brief before each dispatch. Commit per task. Hand off to review after each task.
 ---
 
 # Execute
 
 ```
-[workflow:execute] Starting execution — <slug> | {N} tasks | track: <track>
+[workflow:execute] Starting — <slug> | {N} tasks | track: <track>
 ```
 
 ---
@@ -48,68 +48,38 @@ Parallel-safe tasks (`[P]` in same group) → dispatch concurrently, never two t
 ## Step 3 — Dispatch implementer
 
 ```
-[workflow:execute] ⏳ Task {N} — dispatching implementer
+[workflow:execute] ⏳ Task {N} — implementing
 ```
 
 Use prompt template: `./implementer.md`
-If subagent asks questions → answer completely, then redispatch.
+If subagent asks questions → answer completely → redispatch.
 
 ---
 
-## Step 4 — Review
+## Step 4 — Hand off to review
 
-**Light:** subagent self-review sufficient — skip formal review.
-
-**Standard/Heavy:** two-stage review after each task.
-
-### Stage 1 — Spec compliance
+After implementer commits:
 
 ```
-[workflow:execute] ⏳ Task {N} — spec compliance review
+[workflow:execute] ✅ Task {N} implemented — handing to review
 ```
 
-Use prompt template: `./spec-reviewer.md`
-Issues → implementer fixes → re-review. Never proceed to Stage 2 with open Stage 1 issues.
+**Light:** skip — self-review sufficient. Mark task done, continue.
+**Standard/Heavy:** invoke `workflow:review` for this task, wait for result.
 
-### Stage 2 — Code quality
-
-```
-[workflow:execute] ⏳ Task {N} — code quality review
-```
-
-Use prompt template: `./quality-reviewer.md`
-Critical/Important → implementer fixes → re-review. Minor → note, proceed.
+- Review ✅ → mark `[x] done` in `tasks.md`, update STATE.md, next task
+- Review ❌ → implementer fixes, re-invoke `workflow:review`
 
 ---
 
-## Step 5 — Mark complete + continue
+## Step 5 — All tasks done
 
 ```
-[workflow:execute] ✅ Task {N}/{total} complete
-```
-
-Mark `[x] done` in `tasks.md`. Update STATE.md: `next-action: Task {N+1} — {title}`
-Repeat until all tasks done.
-
----
-
-## Step 6 — Final review + handoff
-
-```
-[workflow:execute] All {N} tasks complete — final review
-```
-
-**Light:** skip. **Standard:** skip if low-risk + solid coverage. **Heavy:** required.
-
-Use prompt template: `./quality-reviewer.md` with full implementation scope.
-
-```
-[workflow:execute] Complete — {N} tasks done
-Next: doc-sync → finishing-a-development-branch
+[workflow:execute] All {N} tasks implemented
 ```
 
 Update STATE.md:
 ```
 phase: review
-next-action: Run doc-sync then finishing-a-development-branch
+next-action: Run workflow:review final — then doc-sync
 ```

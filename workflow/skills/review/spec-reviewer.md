@@ -1,5 +1,5 @@
 ---
-name: execute/spec-reviewer
+name: review/spec-reviewer
 description: Prompt template for spec compliance reviewer subagent. Runs after implementer — checks what was built against what was specced.
 ---
 

@@ -80,7 +80,9 @@ Default: `standard` when uncertain.
 | Intent clear (any track) | `workflow:spec` → `./formation.md` |
 | Approved spec exists → break into tasks | `workflow:task-breakdown` |
 | Tasks ready → implement | `workflow:execute` |
-| All tasks done → sync docs | `workflow:doc-sync` |
+| Task implemented → review it | `workflow:review` |
+| All tasks done → final review | `workflow:review` (final mode) |
+| Final review passed → sync docs | `workflow:doc-sync` |
 | Approved spec must change | `workflow:spec` → `./amendment.md` |
 | Bug or unexpected failure | `superpowers:systematic-debugging` |
 | About to claim done | `superpowers:verification-before-completion` |
