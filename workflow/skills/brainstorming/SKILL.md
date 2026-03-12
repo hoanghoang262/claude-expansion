@@ -1,12 +1,10 @@
 ---
 name: brainstorming
-description: Optional branch for strategic ambiguity. Use when user doesn't know which direction to take — not for requirement gaps.
+description: Align on direction before writing spec. AI coaches and draws out — ideas come from the user.
 ---
 
 # Brainstorming
 
-**Trigger:** Strategic ambiguity only — user unsure which direction, not just missing details.
-**Not triggered:** User knows what they want but lacks specifics → use spec-formation directly.
 
 ---
 
