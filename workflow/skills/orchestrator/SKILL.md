@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: Loaded at every session start. Single source of truth for all workflow phases.
+description: Loaded at every session start. Routing, autonomy rules, core protocols.
 ---
 
 # Workflow Orchestrator
@@ -77,151 +77,17 @@ Never suggest more than once per session.
 
 ---
 
-## Git Workflow
+## Phase Routing
 
-Every feature or bug fix lives on its own branch. Never implement directly on main.
-
-### Starting a feature
-
-When spec is approved → create branch + worktree:
-
-```bash
-git worktree add ../<slug> -b feat/<slug>
-```
-
-```
-[workflow:git] Branch feat/<slug> created — working in ../<slug>/
-```
-
-All agents (implementer, reviewers) work inside the worktree directory. Each commit lands on `feat/<slug>`, not main.
-
-### Parallel tasks
-
-Independent task groups → can run in separate worktrees on the same branch:
-```bash
-git worktree add ../<slug>-task3 feat/<slug>
-```
-No shared files between parallel tasks = no conflicts. Merge worktree commits back to `feat/<slug>` after each task group.
-
-### Merging to main
-
-After final review + doc sync complete:
-
-```
-[workflow:git] Ready to merge — feat/<slug> → main
-```
-
-Before merging:
-1. Run full test suite on feature branch
-2. `git diff main...feat/<slug>` — review what's going in
-3. No open issues in review logs (`.workflow/log/`)
-4. User confirms merge
-
-Then: use `superpowers:finishing-a-development-branch`.
-
-### Rules
-
-- Feature branch per spec slug — one concern per branch
-- Bug fix → `fix/<slug>`, experiment → `exp/<slug>`
-- Never force push to main
-- Worktrees cleaned up after merge: `git worktree remove ../<slug>`
-
----
-
-## Phase: Spec
-
-```
-[workflow:spec] Formation | Amendment — <slug>
-```
-
-**New spec:** Load `./spec-formation.md`
-**Change locked spec:** Load `./spec-amendment.md`
-
-Spec lives at: `docs/specs/<slug>/spec.md`
-
----
-
-## Phase: Task Breakdown
-
-**Light track → skip. Go directly to Execute.**
-
-```
-[workflow:task-breakdown] Decomposing: <slug>
-```
-
-Read: `docs/specs/<slug>/spec.md`, `docs/PROJECT.md`, relevant codebase.
-
-Create tasks using Claude Code task tool (TodoWrite). Each task:
-
-```
-Title: Task N — <name>
-Body:
-  Spec ref: FR-N / SC-N
-  What to build: <one paragraph — behavior not implementation>
-  Files:
-    Create: path/to/file
-    Modify: path/to/existing:L10-L50
-    Test: path/to/test
-  Acceptance:
-    - [ ] specific verifiable outcome
-  Steps (standard/heavy):
-    1. Write failing test
-    2. Run → confirm FAIL
-    3. Implement minimal code
-    4. Run → confirm PASS
-    5. Commit: type(scope): message
-```
-
-Heavy: add Risk notes per task.
-
-**Parallelization map** (standard/heavy): identify which tasks can run concurrently (no shared files, no dependencies).
-
-Announce:
-```
-[workflow:task-breakdown] {N} tasks created. Next: execute
-```
-
----
-
-## Phase: Execute
-
-```
-[workflow:execute] Starting — <slug> | {N} tasks | track: <track>
-```
-
-**Setup (once):** Read `docs/specs/<slug>/spec.md` + relevant codebase. Cache — subagents get content as text, not file refs.
-
-**Per task:**
-
-1. Task Brief (announce before starting)
-
-2. Dispatch `workflow:agents/implementer`:
-   - SPEC: spec.md excerpt for this task
-   - TASK: full task text
-   - CODEBASE: relevant code, patterns, conventions
-
-   Implementer asks questions → answer → redispatch.
-   Implementer done → writes result to `.workflow/log/task-N.md` (SHA + what built).
-
-3. Review (by track):
-   - `light` → self-review only
-   - `standard/heavy`:
-     - Dispatch `workflow:agents/spec-reviewer` (SPEC + TASK + COMMITS)
-       - ✅ → dispatch `workflow:agents/quality-reviewer` (COMMITS + CONVENTIONS + SCOPE: per-task)
-         - ✅ → approved
-         - ❌ Critical/Important → new implementer with issues → re-review
-         - ❌ Minor → note, proceed
-       - ❌ → new implementer with issues list → re-run spec-reviewer
-     - Reviewer writes result to `.workflow/log/review-N.md`
-
-4. Mark task done in Claude Code task tool. Read log files when needed — don't hold all results in context.
-
-**Parallel tasks:** same group, no shared files → dispatch concurrently.
-
-**All tasks done:**
-```
-[workflow:execute] All {N} tasks complete
-```
+| Phase | When | Load |
+|-------|------|------|
+| Spec — new | Intent is clear | `./spec-formation.md` |
+| Spec — change | Locked spec must change | `./spec-amendment.md` |
+| Git setup | Spec just approved | `./git-workflow.md` |
+| Task breakdown | Spec approved, standard/heavy | `./task-breakdown.md` |
+| Execute | Tasks ready | `./execute.md` |
+| Final review | All tasks done | see below |
+| Doc sync | Review passed | see below |
 
 ---
 
@@ -235,7 +101,7 @@ Announce:
 
 Dispatch `workflow:agents/quality-reviewer`:
 - COMMITS: all commits since task-breakdown
-- CONVENTIONS: from docs/PROJECT.md
+- CONVENTIONS: from `docs/PROJECT.md`
 - SCOPE: final integration
 
 Issues → surface to user before proceeding.
@@ -265,7 +131,7 @@ Dispatch `workflow:agents/doc-syncer`:
 [workflow:<phase>] <Action> — <detail>
 ```
 
-Every phase entry, major step, completion. User always knows what AI is doing.
+Every phase entry, major step, completion.
 
 ---
 
