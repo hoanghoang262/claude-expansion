@@ -34,35 +34,17 @@ description: Loaded at every session start — orients AI within the workflow, g
 
 ---
 
-## Brainstorm Detection
+## Brainstorm Suggestion
 
-Assess internally: is the user's intent strategically ambiguous?
+Brainstorming is a **standalone independent session** — not part of the main workflow.
+User can start it anytime via `/brainstorm`. Orchestrator does not manage or route to it.
 
-Signals of strategic ambiguity:
-- User is choosing between fundamentally different approaches
-- "Better", "cleaner", "scale" without defining what that means
-- Multiple valid directions with meaningfully different trade-offs
-
-**If detected → suggest brainstorming, don't force it:**
+**One exception:** if user seems genuinely confused or uncertain about direction, AI may suggest:
 ```
-Tôi thấy bạn đang phân vân về <X>. Bạn có muốn brainstorm để làm rõ hướng đi trước không,
-hay bạn đã có hướng và muốn đi thẳng vào spec?
+Bạn có vẻ chưa rõ hướng đi. Bạn có muốn mở một session brainstorm riêng (/brainstorm) để làm rõ trước không?
 ```
 
-User can decline → proceed to spec-formation directly.
-User accepts → invoke `workflow:brainstorming`.
-
-**No ambiguity detected → go straight to spec-formation. Never suggest brainstorm for clear tasks.**
-
-Examples — no brainstorm needed:
-- "add export PDF for invoices"
-- "add filter by date on orders page"
-- "refactor auth module to separate guard/service/repository"
-
-Examples — suggest brainstorm:
-- "muốn cải thiện collaboration nhưng chưa biết nên làm gì"
-- "muốn permission tốt hơn nhưng chưa rõ hướng"
-- "muốn restructure để scale nhưng chưa chắc cách tiếp cận"
+Never suggest brainstorm when task is clear. Never auto-invoke it.
 
 ---
 
@@ -82,8 +64,6 @@ Default: `standard` when uncertain.
 
 | Situation | Next step |
 |-----------|-----------|
-| Strategic ambiguity detected | Suggest brainstorming → user decides |
-| User accepts brainstorm | `workflow:brainstorming` |
 | Intent clear (any track) | `workflow:spec-formation` |
 | Approved spec exists → break into tasks | `workflow:task-breakdown` |
 | Tasks ready → implement | `workflow:execute` |

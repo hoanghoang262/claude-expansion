@@ -5,6 +5,8 @@ description: Align on direction before writing spec. AI coaches and draws out â€
 
 # Brainstorming
 
+**Standalone session.** Run independently via `/brainstorm`, not as part of the main workflow.
+
 
 ---
 
