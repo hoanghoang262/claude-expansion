@@ -1,32 +1,33 @@
 ---
 name: task-breakdown
-description: Decompose an approved spec into independently verifiable tasks with explicit dependencies and parallelization.
+description: Decompose approved spec into independently verifiable tasks with parallelization map.
 ---
 
 # Task Breakdown
 
-Turn `approved.md` into an executable `tasks.md`.
-Each task must be independently verifiable — implementing just one task delivers real value.
+```
+[workflow:task-breakdown] Decomposing: <slug>
+```
+
+Turn `approved.md` into `tasks.md`. Each task = smallest unit that can be independently committed and verified.
 
 ---
 
 ## Step 0 — Read inputs
 
-1. `approved.md` — the locked contract
+1. `approved.md` — locked contract
 2. `PROJECT.md` — tech stack, conventions, constraints
-3. Any existing code — understand current state before decomposing
+3. Existing codebase state — understand before decomposing
 
 ---
 
 ## Step 1 — Decompose
 
-Break the spec into tasks. A task is the **smallest unit that can be independently committed and verified**.
-
 Rules:
-- One concern per task — don't bundle unrelated changes
-- Each task is testable in isolation
-- Tasks must map to specific FRs or SCs from the spec — no tasks without spec backing
-- Order by dependency: infrastructure first, features second, integration last
+- One concern per task
+- Each task independently testable
+- Every task maps to specific FR or SC — no tasks without spec backing
+- Order: infrastructure → features → integration
 
 **Task format:**
 
@@ -56,11 +57,16 @@ Rules:
 5. Commit: `type(scope): message`
 ```
 
+**Heavy track extras:**
+```markdown
+#### Risk notes
+- Risk: <what could go wrong>
+- Mitigation: <how to handle>
+```
+
 ---
 
-## Step 2 — Mark parallelization
-
-After all tasks are listed, identify groups that can run in parallel (no shared state, no output-input dependency).
+## Step 2 — Parallelization map
 
 ```markdown
 ## Execution Order
@@ -71,11 +77,12 @@ Sequential:
 Parallel group A (after Task 1):
 - Task 3 [P]
 - Task 4 [P]
-- Task 5 [P]
 
 Sequential:
-- Task 6 (integrates A)
+- Task 5 (integrates A)
 ```
+
+Heavy: add dependency graph after map.
 
 ---
 
@@ -91,7 +98,7 @@ next-action: Begin Task 1
 
 Announce:
 ```
-[Tasks ready] {N} tasks across {M} parallel groups → .workflow/specs/<slug>/tasks.md
+[workflow:task-breakdown] {N} tasks across {M} parallel groups → tasks.md
 Next: execute
 ```
 
@@ -101,6 +108,6 @@ Next: execute
 
 | Track | Behavior |
 |-------|----------|
-| `light` | 1–3 tasks, no steps section, no parallelization map needed |
-| `standard` | Full task format, steps section, parallelization map |
-| `heavy` | Full format + dependency graph + risk notes per task |
+| `light` | 1–3 tasks, no steps section, no parallelization map |
+| `standard` | Full format, steps section, parallelization map |
+| `heavy` | Full format + dependency graph + risk notes |
