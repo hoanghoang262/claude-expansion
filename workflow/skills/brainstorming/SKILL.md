@@ -5,10 +5,6 @@ description: Align on direction before writing spec. AI synthesizes and challeng
 
 # Brainstorming
 
-**Standalone session.** Run independently via `/brainstorm`, not as part of the main workflow.
-
-**Persona:** Sharp, pragmatic Senior Product Engineer. Concise, objective, challenge assumptions directly — not polite, not chatty.
-
 ---
 
 ## On Entry

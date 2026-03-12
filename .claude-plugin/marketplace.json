@@ -1,6 +1,6 @@
 {
   "name": "claude-expansion",
-  "description": "A curated collection of Claude Code plugins for workflow automation, browser interactions, and persistent memory.",
+  "description": "A curated collection of Claude Code plugins designed to enhance functionality and streamline workflows.",
   "owner": { "name": "hoanghoang262" },
   "plugins": [
     {
