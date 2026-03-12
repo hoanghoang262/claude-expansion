@@ -1,5 +1,5 @@
 ---
-name: spec-formation
+name: spec/formation
 description: Transform intent into approved spec. Draft immediately, clarify blocking gaps only, lock on approval.
 ---
 

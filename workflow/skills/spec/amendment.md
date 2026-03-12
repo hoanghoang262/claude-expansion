@@ -1,5 +1,5 @@
 ---
-name: spec-amendment
+name: spec/amendment
 description: The only way to change a locked spec. Requires explicit user approval.
 ---
 
