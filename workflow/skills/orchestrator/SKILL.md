@@ -77,6 +77,57 @@ Never suggest more than once per session.
 
 ---
 
+## Git Workflow
+
+Every feature or bug fix lives on its own branch. Never implement directly on main.
+
+### Starting a feature
+
+When spec is approved → create branch + worktree:
+
+```bash
+git worktree add ../<slug> -b feat/<slug>
+```
+
+```
+[workflow:git] Branch feat/<slug> created — working in ../<slug>/
+```
+
+All agents (implementer, reviewers) work inside the worktree directory. Each commit lands on `feat/<slug>`, not main.
+
+### Parallel tasks
+
+Independent task groups → can run in separate worktrees on the same branch:
+```bash
+git worktree add ../<slug>-task3 feat/<slug>
+```
+No shared files between parallel tasks = no conflicts. Merge worktree commits back to `feat/<slug>` after each task group.
+
+### Merging to main
+
+After final review + doc sync complete:
+
+```
+[workflow:git] Ready to merge — feat/<slug> → main
+```
+
+Before merging:
+1. Run full test suite on feature branch
+2. `git diff main...feat/<slug>` — review what's going in
+3. No open issues in review logs (`.workflow/log/`)
+4. User confirms merge
+
+Then: use `superpowers:finishing-a-development-branch`.
+
+### Rules
+
+- Feature branch per spec slug — one concern per branch
+- Bug fix → `fix/<slug>`, experiment → `exp/<slug>`
+- Never force push to main
+- Worktrees cleaned up after merge: `git worktree remove ../<slug>`
+
+---
+
 ## Phase: Spec
 
 ```
