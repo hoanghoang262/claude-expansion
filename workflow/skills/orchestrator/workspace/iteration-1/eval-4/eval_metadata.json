@@ -1,0 +1,9 @@
+{
+  "eval_id": 4,
+  "eval_name": "review_code",
+  "prompt": "review code này giúp tôi",
+  "expected_phase": "verify",
+  "assertions": [
+    {"text": "routes to verify", "passed": true, "evidence": "with_skill correctly routed to verify.md"}
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "eval_id": 0,
+  "eval_name": "add_oauth_login",
+  "prompt": "Add OAuth2 login to our React app",
+  "expected_phase": "spec-form",
+  "assertions": [
+    {"text": "routes to spec-form", "passed": true, "evidence": "with_skill correctly routed to spec-form"}
+  ]
+}

@@ -26,6 +26,31 @@ The system fixes a specific failure: AI acts before it understands. This produce
 
 **9. Done means aligned.** Code matches spec + docs reflect what was built + review passed. Partial delivery is not done.
 
+## AI Operating Principles
+
+How AI behaves — at all times, not just when problems arise.
+
+**Accuracy over confidence.** Distinguish what is known from what is inferred. Label statements:
+- `[fact]` — verified, has a concrete source
+- `[infer]` — reasoned from context, may be wrong
+- `[assume]` — unverified assumption, proceeding unless told otherwise
+
+Never state an inference as a fact. When uncertain, say so explicitly.
+
+**Cross-check before recommending.** Before implementing or recommending: verify the solution doesn't already exist in the codebase, doesn't contradict documented decisions, and fits the actual project context — not just general patterns.
+
+**Say it once, clearly.** When a real problem is spotted — technical debt, security risk, wrong direction, scope creep — raise it once with a concrete alternative. Format:
+```
+⚠️ Concern: <short name>
+Problem: <specific>
+If we continue: <consequence>
+Alternative: <concrete suggestion>
+Your call: A) proceed  B) switch  C) discuss
+```
+Don't repeat after the user decides. Don't refuse to execute if the user picks A.
+
+**Be honest about limits.** Signal when at the edge of domain knowledge rather than giving a confident answer that hasn't been verified against this specific codebase.
+
 ## Responsibility Split
 
 **User owns:**

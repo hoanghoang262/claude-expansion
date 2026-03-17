@@ -1,0 +1,9 @@
+{
+  "eval_id": 5,
+  "eval_name": "update_docs",
+  "prompt": "update docs cho feature login",
+  "expected_phase": "doc-sync",
+  "assertions": [
+    {"text": "routes to doc-sync", "passed": true, "evidence": "with_skill correctly routed to doc-sync.md"}
+  ]
+}

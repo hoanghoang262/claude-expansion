@@ -1,0 +1,9 @@
+{
+  "eval_id": 2,
+  "eval_name": "build_login_feature",
+  "prompt": "build login feature",
+  "expected_phase": "spec-form",
+  "assertions": [
+    {"text": "routes to spec-form", "passed": true, "evidence": "with_skill correctly routed to spec-form"}
+  ]
+}

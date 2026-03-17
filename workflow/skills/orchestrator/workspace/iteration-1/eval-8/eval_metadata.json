@@ -1,0 +1,9 @@
+{
+  "eval_id": 8,
+  "eval_name": "brainstorm_auth",
+  "prompt": "brainstorm về cách làm auth",
+  "expected_phase": "brainstorm",
+  "assertions": [
+    {"text": "routes to brainstorming skill", "passed": true, "evidence": "with_skill correctly suggested brainstorming skill"}
+  ]
+}

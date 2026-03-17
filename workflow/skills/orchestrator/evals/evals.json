@@ -1,0 +1,83 @@
+{
+  "skill_name": "orchestrator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add OAuth2 login to our React app",
+      "expected": "Jump to spec-form.md - clear intent to build",
+      "phase": "spec-form"
+    },
+    {
+      "id": 2,
+      "prompt": "fix cái bug login không đăng nhập được",
+      "expected": "Jump to understand.md - bug fix",
+      "phase": "understand"
+    },
+    {
+      "id": 3,
+      "prompt": "build login feature",
+      "expected": "Jump to spec-form.md - build intent",
+      "phase": "spec-form"
+    },
+    {
+      "id": 4,
+      "prompt": "research về các auth options",
+      "expected": "Jump to research.md",
+      "phase": "research"
+    },
+    {
+      "id": 5,
+      "prompt": "review code này giúp tôi",
+      "expected": "Jump to verify.md",
+      "phase": "verify"
+    },
+    {
+      "id": 6,
+      "prompt": "update docs cho feature login",
+      "expected": "Jump to doc-sync.md",
+      "phase": "doc-sync"
+    },
+    {
+      "id": 7,
+      "prompt": "project này dùng gì?",
+      "expected": "Jump to understand.md - understand codebase",
+      "phase": "understand"
+    },
+    {
+      "id": 8,
+      "prompt": "spec đã approve rồi, implement đi",
+      "expected": "Jump to plan.md - has existing spec",
+      "phase": "plan"
+    },
+    {
+      "id": 9,
+      "prompt": "brainstorm về cách làm auth",
+      "expected": "Jump to brainstorming skill",
+      "phase": "brainstorm"
+    },
+    {
+      "id": 10,
+      "prompt": "không biết nên dùng Redis hay MongoDB",
+      "expected": "Suggest brainstorm - vague, needs exploration",
+      "phase": "brainstorm"
+    },
+    {
+      "id": 11,
+      "prompt": "Xem version hiện tại của app là gì?",
+      "expected": "NOT workflow - just answer directly",
+      "phase": "none"
+    },
+    {
+      "id": 12,
+      "prompt": "sửa lỗi typo trong README",
+      "expected": "Small task - light track, do yourself or single subagent",
+      "phase": "execute"
+    },
+    {
+      "id": 13,
+      "prompt": "refactor toàn bộ payment system",
+      "expected": "Large task - heavy track, agent team",
+      "phase": "execute"
+    }
+  ]
+}

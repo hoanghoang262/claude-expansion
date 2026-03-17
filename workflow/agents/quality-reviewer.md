@@ -30,22 +30,24 @@ Read the code. Check:
 - No regressions
 - Required docs updated
 
-## Output
+---
+
+## Output format
 
 ```
-✅ Approved
-<one sentence — what's strong>
-```
+## Result
+status: ✅ approved | ❌ issues
+summary: <1 sentence — what's strong or main issue>
 
-or
-
-```
-Issues found:
-
-[Critical] <issue — file:line> — broken behavior, security, spec violated
+## Issues
+[Critical]  <issue — file:line> — broken behavior, security, spec violated
 [Important] <issue — file:line> — poor design, missing tests, hard to maintain
-[Minor] <issue — file:line> — style, naming, small improvement
+[Minor]     <issue — file:line> — style, naming, small improvement
 ```
+
+If no issues: `issues: none`
+
+---
 
 ## Severity
 

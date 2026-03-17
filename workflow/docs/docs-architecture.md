@@ -33,18 +33,24 @@ Thinking in progress. Not project knowledge — working space for the current se
 
 ```
 .workflow/
+├── PROJECT.md                    # project identity, stack, constraints, key decisions
 ├── brainstorm/
 │   └── <N>-<topic>.md            # numbered, kept until feature ships
-└── log/
-    ├── task-N.md                 # implementer output: SHA, what built
-    └── review-N.md               # reviewer output: ✅/❌ + issues
+└── specs/<slug>/
+    ├── tasks.md                  # execution breakdown
+    └── log/
+        ├── summary.md            # ← read first — task status, decisions, retro
+        ├── task-N.md             # implementer output: SHA, what built
+        └── review-N.md           # reviewer output: ✅/❌ + issues
 ```
+
+**summary.md** is the index for a feature's execution. AI appends one row after each task completes. At session start, read `summary.md` first — it gives full context without parsing all individual files. Saves tokens, enables fast resume.
 
 **Rules:**
 - Created freely — no ceremony
-- Never treated as source of truth
+- Never treated as source of truth for long-term decisions
 - Not linked from long-term docs
-- Cleaned up after feature ships (`phase: done`)
+- Cleaned up after feature ships
 
 ---
 

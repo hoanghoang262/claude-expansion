@@ -1,6 +1,6 @@
 ---
 name: orchestrator
-description: Loaded at every session start. Routing, autonomy rules, core protocols.
+description: Use when user describes intent to build/change something, needs spec formation/amendment, or multi-step implementation coordination. Trigger on: feature requests, bug fixes with scope, architecture decisions, or irreversible actions. Not for simple lookups or one-off questions.
 ---
 
 # Workflow Orchestrator
@@ -9,71 +9,43 @@ description: Loaded at every session start. Routing, autonomy rules, core protoc
 [workflow:orchestrator] Session start
 ```
 
-Read user's message → classify intent → route to correct phase.
-
 ---
 
-## Autonomy Rules
+## Critical Thinking (Always First)
 
-**Proceed without asking:**
-- Implementation details within approved spec
-- Test coverage, bug fixes within scope
-- Refactors that don't change external behavior
-- Gaps with reasonable defaults → assume + note
+Before any action, think silently:
 
-**Always ask first:**
+### 1. Intent Clear?
+| User input | Action |
+|------------|--------|
+| Clear goal + details | Draft spec immediately |
+| Clear goal + brief | Draft, ask 1 focused question |
+| Vague ("fix", "improve") | Ask ONE clarifying question |
+| Has existing plan | Verify quality, execute |
+| Just a question | Answer directly, no workflow |
 
-| Situation | Why |
-|-----------|-----|
-| Spec change needed | Locked contract |
-| New dependency | Long-term impact |
-| Architecture change touching >3 files | Long-term consequence |
-| Public API change | User must own this |
-| Scope expansion | Not committed by user |
-| Irreversible ops (delete, force push) | Cannot undo |
+### 2. Task Scope
+| Scope | Effort | Mode |
+|-------|--------|------|
+| Small | <30 min, 1 file | Do yourself or single subagent |
+| Medium | 30-120 min | Small team (1-2 subagents) |
+| Large | >120 min | Full team + planning + tests |
 
-**Never:** restate intent, ask permission to start, confirm obvious decisions.
+**Rule:** Don't spawn full team for small tasks.
 
----
-
-## Task Brief (before every task)
-
-```
-[Task Brief]
-Plan: <1-2 sentences — what + how>
-Risk: NONE | LOW: <detail> | HIGH: <detail>
-Action: proceeding | ⚠️ need input: <single question>
-```
-
-HIGH → wait. NONE/LOW → proceed immediately.
+### 3. Risk Check
+- High risk → flag concern before proceeding
+- Low risk → proceed without asking
 
 ---
 
 ## Track Classification
 
-| Track | Signals |
-|-------|---------|
-| `light` | Single file, obvious fix, no behavior change |
-| `standard` | New feature, multi-behavior, some unknowns |
-| `heavy` | Architecture change, multi-system, security/scale, breaking |
-
-Default: `standard` when uncertain.
-
----
-
-## Brainstorm Gate
-
-Suggest only when ALL true:
-- User doesn't know which direction to take
-- Different answers → fundamentally different specs
-
-```
-Bạn có muốn brainstorm trước để làm rõ hướng không?
-```
-
-Agree → load `workflow:brainstorming`, save output to `.workflow/brainstorm/<N>-<topic>.md`.
-Decline → go to spec formation.
-Never suggest more than once per session.
+| Track | When |
+|-------|------|
+| `light` | All safe, no new behavior |
+| `standard` | Has medium risk, no high |
+| `heavy` | Any high risk |
 
 ---
 
@@ -81,59 +53,39 @@ Never suggest more than once per session.
 
 | Phase | When | Load |
 |-------|------|------|
-| Spec — new | Intent is clear | `./spec-formation.md` |
-| Spec — change | Locked spec must change | `./spec-amendment.md` |
-| Git setup | Spec just approved | `./git-workflow.md` |
-| Task breakdown | Spec approved, standard/heavy | `./task-breakdown.md` |
-| Execute | Tasks ready | `./execute.md` |
-| Final review | All tasks done | see below |
-| Doc sync | Review passed | see below |
+| Spec new | Intent clear | `references/spec-formation.md` |
+| Spec change | Locked spec must change | `references/spec-amendment.md` |
+| Git setup | Spec approved | `references/git-workflow.md` |
+| Breakdown | Spec approved, std/heavy | `references/task-breakdown.md` |
+| Execute | Tasks ready | `references/execute.md` |
+| Final review | All tasks done | `workflow:agents/quality-reviewer` |
+| Doc sync | Review passed | `workflow:agents/doc-syncer` |
 
 ---
 
-## Phase: Final Review
+## Autonomy Rules
 
-**Light:** skip. **Standard:** skip if low-risk. **Heavy:** required.
+**Proceed without asking:**
+- Implementation within approved spec
+- Bug fixes, refactors (no behavior change)
+- Gaps with reasonable defaults
 
-```
-[workflow:review] ⏳ Final integration review
-```
+**Always ask:**
+- Spec changes on locked spec
+- Public API changes
+- Scope expansion
+- Irreversible ops (delete, force push)
 
-Dispatch `workflow:agents/quality-reviewer`:
-- COMMITS: all commits since task-breakdown
-- CONVENTIONS: from `docs/PROJECT.md`
-- SCOPE: final integration
-
-Issues → surface to user before proceeding.
-
-```
-[workflow:review] ✅ Final review complete
-```
-
----
-
-## Phase: Doc Sync
-
-```
-[workflow:doc-sync] Starting — <slug>
-```
-
-Dispatch `workflow:agents/doc-syncer`:
-- SPEC_PATH: `docs/specs/<slug>/spec.md`
-- COMMITS: all implementation commits
-- TRACK: current track
+**Never:** ask permission to start, restate intent, confirm obvious things.
 
 ---
 
 ## Announce Format
-
 ```
 [workflow:<phase>] <Action> — <detail>
 ```
 
-Every phase entry, major step, completion.
-
 ---
 
-> AI owns execution. User owns intent and strategic direction.
-> Plan before acting. Surface only irreversible or strategic decisions.
+> User owns intent/strategy. AI owns execution.
+> Plan before acting. Surface only strategic decisions.

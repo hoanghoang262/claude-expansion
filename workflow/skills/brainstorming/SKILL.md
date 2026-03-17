@@ -23,19 +23,27 @@ Goal: draw out the user's real problem, constraints, and mental model. No propos
 **Max 2–3 conversational turns.** If core problem is clear before that, move to Phase 2 proactively.
 
 **Questioning style:**
-- Prioritize open questions — let user describe freely rather than answer yes/no
-- Group related questions together (2–4 per message) — avoid one-at-a-time drip
+- Use `AskUserQuestion` tool for questions with clear options (scope, user types, tech stack, payment method, etc.) — max 4 questions per call, 2–4 options each; users can always type "Other"
+- Use plain text only for genuinely open-ended questions with no reasonable option set
+- Group questions by theme in a single `AskUserQuestion` call — avoid multiple sequential calls
 - Skip trivial or obvious questions — ask only what genuinely changes understanding
 - If research would expand the picture → launch `workflow:agents/researcher` with the specific question, share findings as input to discussion
 - Surface counter-arguments and opposing views with specific evidence — expand options, don't narrow
 
-Useful probes:
+**Clarification probes** — understand what the user already has in mind:
 - "What problem are you actually solving — and for whom?"
 - "What does success look like concretely in 3 months?"
 - "What have you already tried or ruled out, and why?"
-- "What's the riskiest assumption here?"
-- "What would make you abandon this direction entirely?"
 - "Are there hard technical constraints, legacy systems, or stack requirements we must follow?"
+
+**Expansion probes** — push beyond what the user described, use at least 1–2 per turn:
+- "Have you considered X? [introduce an angle they likely haven't mentioned]"
+- "What if you removed constraint Y — how would that change the approach?"
+- "Who else has solved a similar problem, and how did they do it?"
+- "What's the riskiest assumption baked into this? What if it's wrong?"
+- "What adjacent features or use cases would this naturally enable?"
+- "What would make you abandon this direction entirely?"
+- Challenge stated requirements: "Why does this need to be X? What breaks if it isn't?"
 
 Checkpoint when core problem is clear:
 ```
@@ -114,3 +122,11 @@ Brainstorm summary lives in conversation only — no files needed.
 - Counter-arguments must have specific evidence, not just "some people think X"
 - No trivial questions — every question must change understanding if answered differently
 - Phase 3 optional — skip if direction is clearly solid
+
+## Output Format
+
+- **Concise** — lead with the point, cut preamble and filler
+- **Structured** — use bullet lists, tables, or labeled sections; avoid prose paragraphs
+- **Icons for orientation:** 📌 key point · 💡 insight · ⚠️ risk · ❌ ruled out · ✅ confirmed · 🔄 process
+- Questions grouped under a bold label (e.g. **Scope:** · **Users:** · **Tech:**), not listed as a flat wall
+- No trailing summaries, no restating what the user said

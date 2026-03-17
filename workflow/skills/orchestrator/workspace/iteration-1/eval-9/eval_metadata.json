@@ -1,0 +1,9 @@
+{
+  "eval_id": 9,
+  "eval_name": "redis_vs_mongodb",
+  "prompt": "không biết nên dùng Redis hay MongoDB",
+  "expected_phase": "brainstorm",
+  "assertions": [
+    {"text": "suggests brainstorm for vague decision", "passed": true, "evidence": "with_skill correctly suggested brainstorming"}
+  ]
+}

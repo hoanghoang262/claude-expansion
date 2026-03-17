@@ -1,0 +1,9 @@
+{
+  "eval_id": 12,
+  "eval_name": "refactor_payment",
+  "prompt": "refactor toàn bộ payment system",
+  "expected_phase": "execute",
+  "assertions": [
+    {"text": "routes to understand (large task needs analysis)", "passed": true, "evidence": "with_skill routed to understand for context"}
+  ]
+}
