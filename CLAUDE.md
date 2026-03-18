@@ -4,11 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Claude Code plugin marketplace** called `claude-expansion` — a curated collection of plugins that extend Claude Code functionality. It is managed via `.claude-plugin/marketplace.json` and contains three plugins:
+This is a **Claude Code plugin marketplace** called `claude-expansion` — a curated collection of plugins that extend Claude Code functionality. It is managed via `.claude-plugin/marketplace.json`.
 
-- **playwright-cli** — Browser automation via Playwright (screenshots, form filling, scraping, test generation)
-- **workflow** — Workflow automation (scaffolded, in development)
-- **memory** — Persistent memory/context management (scaffolded, in development)
+## Plugins
+
+| Plugin           | Status     | Description                                                                                                          |
+| ---------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| `playwright-cli` | Mature     | Browser automation via Playwright (screenshots, form filling, scraping, test generation)                             |
+| `workflow`       | Scaffolded | Workflow automation (in development)                                                                                 |
+| `memory`         | Scaffolded | Persistent memory/context management (in development)                                                                |
+| `superpowers`    | Reference  | Skills library from [obra/superpowers](https://github.com/obra/superpowers) — TDD, debugging, collaboration patterns |
 
 No build system or package manager is used. Plugins are self-contained directories with their own `.claude-plugin/plugin.json` descriptor.
 
@@ -24,13 +29,16 @@ playwright-cli/                   # Mature plugin with skills + references
 workflow/                         # Scaffolded plugin (empty)
 memory/                           # Scaffolded plugin (empty)
 resource/
+  superpowers/                     # Skills library plugin (reference for building new plugins)
+    .claude-plugin/plugin.json
+    skills/                        # 16 reusable skills (brainstorming, TDD, debugging, etc.)
   backup/                         # Development principles (workflow, code, docs)
-  superpowers/                    # Full skills library from obra/superpowers
 ```
 
 ## Plugin Architecture
 
 Each plugin follows this structure:
+
 ```
 <plugin-name>/
   .claude-plugin/plugin.json      # Metadata: name, version, description, keywords
@@ -44,6 +52,17 @@ Each plugin follows this structure:
 ```
 
 The marketplace registry at `.claude-plugin/marketplace.json` lists all plugins with their source path and version.
+
+## Key Concepts
+
+This repository uses Claude Code's extension system. Key terms:
+
+- **Skill** — A specialized capability triggered by the Skill tool. Defined in `SKILL.md` with `name:` and `description:` frontmatter. Example: `superpowers:brainstorming`
+- **Agent** — A specialized subagent type launched via the Agent tool with specific capabilities. Defined in `agents/` directory.
+- **Command** — Custom slash commands (e.g., `/playwright-cli`). Defined in `commands/`.
+- **Hook** — Event hooks that run on specific events. Defined in `hooks/`.
+
+Reference: See `resource/superpowers/skills/` for examples of well-documented skills.
 
 ## Development Principles
 
@@ -59,12 +78,21 @@ From `resource/backup/`:
 
 `resource/superpowers/skills/` contains 16 reusable skills for agent-driven development workflows. Key skills:
 
-- `brainstorming` — Socratic design refinement before implementation
-- `writing-plans` — Break work into 2–5 minute tasks
-- `subagent-driven-development` — Fast iteration with two-stage review
-- `test-driven-development` — RED-GREEN-REFACTOR cycle
-- `systematic-debugging` — 4-phase root cause analysis
-- `dispatching-parallel-agents` — Concurrent subagent workflows
-- `finishing-a-development-branch` — Merge/PR decision workflow
+- `superpowers:brainstorming` — Socratic design refinement before implementation (MUST use before any creative work)
+- `superpowers:subagent-driven-development` — Execute plans with fresh subagent per task + two-stage review
+- `superpowers:test-driven-development` — RED-GREEN-REFACTOR cycle
+- `superpowers:systematic-debugging` — 4-phase root cause analysis
+- `superpowers:writing-plans` — Break work into 2–5 minute tasks
+- `superpowers:finishing-a-development-branch` — Merge/PR decision workflow
+- `superpowers:dispatching-parallel-agents` — Concurrent subagent workflows
+- `superpowers:verification-before-completion` — Validate before marking done
+- `superpowers:executing-plans` — Execute plans in parallel session
+- `superpowers:requesting-code-review` — Code review templates
+- `superpowers:receiving-code-review` — Handle review feedback
+- `superpowers:using-git-worktrees` — Isolated workspace setup
+- `superpowers:writing-skills` — How to write good skills
 
-These are reference implementations for building new plugins and skills.
+These are reference implementations for building new plugins and skills. Study `brainstorming/SKILL.md` and `subagent-driven-development/SKILL.md` to understand skill structure.
+
+- alway wright by englash
+- if have claude code knowlge as subagent skill term, use claude-code-guild subagent to search first

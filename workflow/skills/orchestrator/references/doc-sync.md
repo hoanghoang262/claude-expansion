@@ -2,14 +2,16 @@
 
 Update documentation to reflect changes.
 
-## Principle: Docs is Xương Sống
+## Principle: Docs is the Backbone
 
-**Docs are NOT phase cuối — docs are xuyên suốt.**
+**Docs are NOT the final phase — docs are throughout.**
 
 Every phase should update relevant docs. This phase is for:
 - Final sync
 - Cross-reference updates
 - Changelog
+
+**Best practice:** Sync docs after every project edit, not just at the end.
 
 ## Process
 

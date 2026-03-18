@@ -1,17 +1,23 @@
-# Research Phase
+# Clarify — Research
 
-Investigation, analysis, and exploration of options.
+Phase 1b: Investigation, analysis, exploration.
 
-## Inputs Needed
+> **Load only when needed.** Load `understand.md` first.
 
-1. **Research topic** - What to investigate
-2. **Context** - Why this matters, constraints
-3. **Existing knowledge** - What's already known
+---
+
+## When to Use
+
+- User wants to compare options
+- Need to investigate technical approaches, libraries, patterns
+- Architecture decisions that need analysis
+- User says: "what are the options?", "research", "compare", "investigate"
+
+---
 
 ## Process
 
-### 1. Define Research Questions
-
+### 1. Define Questions
 ```
 What needs to be answered:
 1. <question 1>
@@ -19,78 +25,32 @@ What needs to be answered:
 ```
 
 ### 2. Investigate
-
-- Search codebase
+- Search codebase for existing patterns
 - Read relevant docs
-- Analyze patterns
-- Compare options
+- Compare alternatives
 
-### 3. Document Findings
+### 3. Document
 
-Create `docs/research/<topic>.md`:
+Template: [templates/research-findings.md](templates/research-findings.md)
 
-```markdown
-# Research: <topic>
-
-## Questions
-1. <question 1>
-2. <question 2>
-
-## Findings
-
-### <Finding 1>
-<details>
-
-### <Finding 2>
-<details>
-
-## Recommendations
-
-Based on analysis:
-- <Option A>: <pros/cons>
-- <Option B>: <pros/cons>
-
-## Next Steps
-- Decision needed?
-- Spec needed?
-- Implementation?
-```
+---
 
 ## Depth
 
-### When to stop research
-- Already have enough info to answer original question
-- 3+ sources confirm same conclusion
-- User gave clear direction → no need for more options
+| Situation | Action |
+|-----------|--------|
+| Enough info to decide | Stop |
+| 3+ sources confirm same | Stop |
+| Results conflict | Dig deeper |
+| Big impact (arch, security) | Dig deeper |
+| User says "deep dive" | Dig deeper |
 
-### When to dig deeper
-- Results conflict each other → need more sources
-- Decision has big impact (architecture, security)
-- User says "research thoroughly" or "deep dive"
+---
 
-### Output scale by context
-- Quick question → 1 paragraph + recommendation
-- Compare options → Trade-off table + recommendation
-- Deep dive → Full findings + sources + multiple perspectives
+## Output Scale
 
-## Docs Responsibility
-
-| Output | Docs to update |
-|--------|----------------|
-| Technical findings | `docs/architecture/` |
-| Feature research | `docs/features/` |
-| Options analysis | `docs/specs/<slug>/research.md` |
-
-## Output
-
-- Research document with findings
-- Recommendations with rationale
-- Clear next action
-
-## Jump to Next Phase
-
-| Situation | Next Phase |
-|-----------|-------------|
-| Decision made → implement | `spec-form.md` or `execute.md` |
-| Need to plan | `plan.md` |
-| More research needed | Stay in research |
+| Context | Output |
+|---------|--------|
+| Quick | 1 paragraph + recommendation |
+| Compare options | Trade-off table + recommendation |
+| Deep dive | Full findings + sources |
