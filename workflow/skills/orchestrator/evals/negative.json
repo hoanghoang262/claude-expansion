@@ -1,69 +1,54 @@
 {
   "skill_name": "orchestrator",
+  "description": "Cases that should NOT trigger workflow orchestrator",
   "evals": [
     {
       "id": 1,
-      "prompt": "Xem version hiện tại của app là gì?",
+      "prompt": "What's the current app version?",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Simple lookup - should NOT trigger workflow"
+      "rationale": "simple lookup"
     },
     {
       "id": 2,
-      "prompt": "đọc file này giúp tôi",
+      "prompt": "read this file for me",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Simple read - should NOT trigger"
+      "rationale": "simple read"
     },
     {
       "id": 3,
       "prompt": "chmod 755 script.sh",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Simple command - should NOT trigger"
+      "rationale": "simple command"
     },
     {
       "id": 4,
-      "prompt": "tạo file test.txt",
+      "prompt": "create file test.txt",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Simple file creation - should NOT trigger"
+      "rationale": "simple file creation"
     },
     {
       "id": 5,
       "prompt": "npm install",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Simple command - should NOT trigger"
+      "rationale": "simple command"
     },
     {
       "id": 6,
       "prompt": "Hello, how are you?",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Greeting - should NOT trigger"
+      "rationale": "greeting"
     },
     {
       "id": 7,
       "prompt": "ls -la",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Simple ls - should NOT trigger"
+      "rationale": "simple ls command"
     },
     {
       "id": 8,
       "prompt": "Thanks!",
       "expected": "none",
-      "phase": "none",
-      "scope": "negative",
-      "note": "Thanks - should NOT trigger"
+      "rationale": "casual thanks"
     }
   ]
 }

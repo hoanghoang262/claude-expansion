@@ -1,0 +1,66 @@
+{
+  "skill_name": "orchestrator",
+  "description": "Core routing tests for workflow orchestrator skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Add OAuth2 login to our React app",
+      "expected": "spec-form",
+      "rationale": "build intent → spec-form"
+    },
+    {
+      "id": 2,
+      "prompt": "fix the login bug - user can't log in",
+      "expected": "understand",
+      "rationale": "fix intent with unclear scope → understand"
+    },
+    {
+      "id": 3,
+      "prompt": "fix typo in README",
+      "expected": "execute",
+      "rationale": "small fix → execute directly"
+    },
+    {
+      "id": 4,
+      "prompt": "research authentication options",
+      "expected": "research",
+      "rationale": "research intent"
+    },
+    {
+      "id": 5,
+      "prompt": "review this code for me",
+      "expected": "verify",
+      "rationale": "review intent → verify"
+    },
+    {
+      "id": 6,
+      "prompt": "update docs for login feature",
+      "expected": "doc-sync",
+      "rationale": "docs intent → doc-sync"
+    },
+    {
+      "id": 7,
+      "prompt": "brainstorm about authentication",
+      "expected": "brainstorm",
+      "rationale": "brainstorm intent"
+    },
+    {
+      "id": 8,
+      "prompt": "spec is approved, start implementing",
+      "expected": "plan",
+      "rationale": "spec exists → plan phase"
+    },
+    {
+      "id": 9,
+      "prompt": "what tech stack does this project use?",
+      "expected": "understand",
+      "rationale": "understand codebase"
+    },
+    {
+      "id": 10,
+      "prompt": "not sure whether to use Redis or MongoDB",
+      "expected": "brainstorm",
+      "rationale": "vague decision → auto-suggest brainstorm"
+    }
+  ]
+}
