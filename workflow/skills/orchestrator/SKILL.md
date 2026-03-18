@@ -8,6 +8,22 @@ description: |
 
 Intent-driven workflow orchestrator. Classify user intent → jump to appropriate phase.
 
+## When NOT to Use This Skill
+
+**DO NOT trigger this skill for:**
+- Simple one-off commands: `ls`, `cd`, `mkdir`, `rm`, `cp`, `mv`, `chmod`, `npm install`, `git status`
+- Simple lookups: "read file X", "what's in this folder", "show me version"
+- Casual conversation: greetings, thanks, "how are you"
+- Basic file creation: "create file X", "make directory Y"
+
+**Trigger this skill ONLY when:**
+- Task requires multiple steps
+- Task requires decision-making or planning
+- Task needs coordinating subagents
+- Task is about code architecture, features, bugs, refactoring
+
+---
+
 ## Intent Router
 
 **Step 1: Detect intent keywords**
