@@ -1,9 +1,0 @@
-{
-  "eval_id": 3,
-  "eval_name": "research_auth_options",
-  "prompt": "research về các auth options",
-  "expected_phase": "research",
-  "assertions": [
-    {"text": "routes to research", "passed": true, "evidence": "with_skill correctly routed to research.md"}
-  ]
-}

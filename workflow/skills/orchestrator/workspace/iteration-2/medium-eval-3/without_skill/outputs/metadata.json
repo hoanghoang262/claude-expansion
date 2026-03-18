@@ -1,8 +1,0 @@
-{
-  "eval_id": "medium-eval-3",
-  "prompt": "project này dùng gì?",
-  "expected_phase": "understand",
-  "routed_phase": "understand",
-  "correct": true,
-  "reasoning": "Câu hỏi 'project này dùng gì?' thuộc loại 'cần biết/giải thích' theo Intent Router trong SKILL.md"
-}

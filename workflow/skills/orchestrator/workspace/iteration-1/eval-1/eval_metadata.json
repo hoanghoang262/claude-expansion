@@ -1,9 +1,0 @@
-{
-  "eval_id": 1,
-  "eval_name": "fix_login_bug",
-  "prompt": "fix cái bug login không đăng nhập được",
-  "expected_phase": "understand",
-  "assertions": [
-    {"text": "routes to understand", "passed": true, "evidence": "with_skill correctly routed to understand.md"}
-  ]
-}

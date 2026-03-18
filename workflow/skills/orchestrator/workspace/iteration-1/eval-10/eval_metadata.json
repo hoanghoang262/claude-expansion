@@ -1,9 +1,0 @@
-{
-  "eval_id": 10,
-  "eval_name": "check_version",
-  "prompt": "Xem version hiện tại của app là gì?",
-  "expected_phase": "none",
-  "assertions": [
-    {"text": "should NOT trigger workflow", "passed": true, "evidence": "with_skill correctly said NONE/simple lookup"}
-  ]
-}

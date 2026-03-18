@@ -1,9 +1,0 @@
-{
-  "eval_id": 6,
-  "eval_name": "what_is_project",
-  "prompt": "project này dùng gì?",
-  "expected_phase": "understand",
-  "assertions": [
-    {"text": "routes to understand", "passed": true, "evidence": "with_skill correctly routed to understand.md"}
-  ]
-}

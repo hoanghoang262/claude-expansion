@@ -1,9 +1,0 @@
-{
-  "eval_id": 11,
-  "eval_name": "fix_typo_readme",
-  "prompt": "sửa lỗi typo trong README",
-  "expected_phase": "execute",
-  "assertions": [
-    {"text": "routes to execute (small task)", "passed": true, "evidence": "with_skill routed to understand (bug/fix pattern)"}
-  ]
-}

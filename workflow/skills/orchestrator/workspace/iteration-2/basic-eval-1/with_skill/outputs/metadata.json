@@ -1,7 +1,0 @@
-{
-  "task": "fix cái bug login không đăng nhập được",
-  "phase": "understand",
-  "reference": "references/understand.md",
-  "reasoning": "Complex fix - root cause unknown, requires investigation of login flow",
-  "timestamp": "2026-03-17T00:00:00Z"
-}

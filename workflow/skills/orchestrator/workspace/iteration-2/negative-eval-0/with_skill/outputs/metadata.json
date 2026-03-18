@@ -1,6 +1,0 @@
-{
-  "task": "Xem version hiện tại của app là gì?",
-  "phase": "none",
-  "reasoning": "Simple lookup - does NOT require workflow orchestration. One-off information request.",
-  "timestamp": "2026-03-17T22:00:00Z"
-}

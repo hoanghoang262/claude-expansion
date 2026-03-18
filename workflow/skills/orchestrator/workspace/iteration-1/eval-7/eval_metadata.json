@@ -1,9 +1,0 @@
-{
-  "eval_id": 7,
-  "eval_name": "spec_approved_implement",
-  "prompt": "spec đã approve rồi, implement đi",
-  "expected_phase": "plan",
-  "assertions": [
-    {"text": "routes to plan", "passed": true, "evidence": "with_skill correctly routed to plan.md"}
-  ]
-}
