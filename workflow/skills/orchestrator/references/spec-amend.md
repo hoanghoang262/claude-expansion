@@ -2,12 +2,6 @@
 
 Amend existing spec when requirements change.
 
-## When to Enter
-
-- User says: "thay đổi", "update", "modify", "thêm requirement"
-- Existing spec needs modification
-- Scope expansion/contraction
-
 ## Inputs Needed
 
 1. **Existing spec** - `docs/specs/<slug>/spec.md`

@@ -2,12 +2,6 @@
 
 Create new specification from user intent. Spec-Driven Development.
 
-## When to Enter
-
-- User says: "build", "implement", "thêm", "tạo", "create"
-- No existing spec for this feature
-- Need to formalize requirements
-
 ## Inputs Needed
 
 1. **User intent** - What user wants to build

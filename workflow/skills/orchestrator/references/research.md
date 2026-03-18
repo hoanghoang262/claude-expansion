@@ -2,12 +2,6 @@
 
 Investigation, analysis, and exploration of options.
 
-## When to Enter
-
-- User says: "research", "tìm hiểu", "phân tích", "so sánh"
-- Need to explore options before deciding
-- Need to understand something deeply
-
 ## Inputs Needed
 
 1. **Research topic** - What to investigate

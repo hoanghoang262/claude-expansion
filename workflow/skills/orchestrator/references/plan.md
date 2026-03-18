@@ -2,12 +2,6 @@
 
 Break spec into executable tasks.
 
-## When to Enter
-
-- User says: "plan", "chia task", "break down"
-- Spec ready → need tasks
-- After spec-form or spec-amend
-
 ## Inputs Needed
 
 1. **Spec** - `docs/specs/<slug>/spec.md`

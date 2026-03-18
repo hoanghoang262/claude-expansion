@@ -2,12 +2,6 @@
 
 Analyze context, understand codebase, constraints before taking action.
 
-## When to Enter
-
-- User says: "fix bug", "sửa lỗi", "cần biết", "giải thích"
-- After intent classification shows need for analysis
-- Before any spec/planning for bug fixes
-
 ## Inputs Needed
 
 1. **User intent** - What user describes

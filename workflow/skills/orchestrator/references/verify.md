@@ -2,12 +2,6 @@
 
 Test, review, validate implementation against spec.
 
-## When to Enter
-
-- All tasks implemented
-- User says: "review", "verify", "check", "test"
-- Before merge
-
 ## Inputs Needed
 
 1. **Spec** - `docs/specs/<slug>/spec.md`

@@ -2,12 +2,6 @@
 
 Implement tasks using subagents or agent teams.
 
-## When to Enter
-
-- Plan ready → need to implement
-- After understand (for bug fixes)
-- User says: "implement", "làm đi", "code"
-
 ## Routing: Subagent vs Agent Team
 
 Choose based on task complexity:

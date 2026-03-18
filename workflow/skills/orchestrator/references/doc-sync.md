@@ -1,12 +1,6 @@
 # Doc Sync Phase
 
-Update documentation to reflect changes. Docs is xương sống — always sync.
-
-## When to Enter
-
-- After verify passed
-- User says: "docs", "tài liệu", "update docs"
-- Any significant change made
+Update documentation to reflect changes.
 
 ## Principle: Docs is Xương Sống
 
