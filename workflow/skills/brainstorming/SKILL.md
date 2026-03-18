@@ -1,132 +1,74 @@
 ---
 name: brainstorming
-description: Align on direction before writing spec. AI synthesizes and challenges — ideas come from the user.
+description: |
+  Use when: User has vague idea, needs to explore options, or needs help clarifying vision.
+  NOT for: clear intent, simple tasks.
 ---
 
 # Brainstorming
 
----
+Explore and expand user's ideas. Help clarify vision through structured discussion.
 
-## On Entry
+## When to Use
 
-```
-[workflow:brainstorming] Starting — Topic: <topic>
-```
+- User says: "brainstorm", "suy nghĩ", "ý tưởng", "chưa biết làm gì"
+- Vague intent: "make it better", "improve something"
+- User stuck, needs options
+- Orchestrator detects unclear direction → suggests brainstorm
 
-Proceed to Phase 1 immediately.
+## Process
 
----
+### 1. Explore
 
-## Phase 1 — Understand
+Ask questions to understand:
+- What problem are you solving?
+- Who is this for?
+- What does success look like?
+- Any constraints?
 
-Goal: draw out the user's real problem, constraints, and mental model. No proposals yet.
-**Max 2–3 conversational turns.** If core problem is clear before that, move to Phase 2 proactively.
+### 2. Generate Options
 
-**Questioning style:**
-- Use `AskUserQuestion` tool for questions with clear options (scope, user types, tech stack, payment method, etc.) — max 4 questions per call, 2–4 options each; users can always type "Other"
-- Use plain text only for genuinely open-ended questions with no reasonable option set
-- Group questions by theme in a single `AskUserQuestion` call — avoid multiple sequential calls
-- Skip trivial or obvious questions — ask only what genuinely changes understanding
-- If research would expand the picture → launch `workflow:agents/researcher` with the specific question, share findings as input to discussion
-- Surface counter-arguments and opposing views with specific evidence — expand options, don't narrow
+Present 3-5 options:
+- Option A: description + pros + cons
+- Option B: description + pros + cons
+- ...
 
-**Clarification probes** — understand what the user already has in mind:
-- "What problem are you actually solving — and for whom?"
-- "What does success look like concretely in 3 months?"
-- "What have you already tried or ruled out, and why?"
-- "Are there hard technical constraints, legacy systems, or stack requirements we must follow?"
+### 3. Guide Decision
 
-**Expansion probes** — push beyond what the user described, use at least 1–2 per turn:
-- "Have you considered X? [introduce an angle they likely haven't mentioned]"
-- "What if you removed constraint Y — how would that change the approach?"
-- "Who else has solved a similar problem, and how did they do it?"
-- "What's the riskiest assumption baked into this? What if it's wrong?"
-- "What adjacent features or use cases would this naturally enable?"
-- "What would make you abandon this direction entirely?"
-- Challenge stated requirements: "Why does this need to be X? What breaks if it isn't?"
+Help user pick direction:
+- Ask which resonates
+- Highlight trade-offs
+- Don't force decision
 
-Checkpoint when core problem is clear:
-```
-Explored so far: <brief summary>
-→ Keep digging, or ready to look at approaches?
-```
+### 4. Document
 
----
+Save to `.workflow/brainstorm/<topic>.md`:
 
-## Phase 2 — Propose
+```markdown
+# Brainstorm: <topic>
 
-Based on user's inputs, synthesize **2–3 concrete approaches** with trade-offs.
-Lead with recommendation — not neutrally, with reasoning.
+## Context
+<what user shared>
 
-```
-**Recommended: Option A** — <one-sentence reason>
+## Options Explored
+| Option | Description | Pros | Cons |
+|--------|-------------|------|------|
+| A | ... | ... | ... |
 
-| Option | Approach | Strength | Trade-off |
-|--------|----------|----------|-----------|
-| A ⭐  | ...      | ...      | ...       |
-| B     | ...      | ...      | ...       |
-| C     | ...      | ...      | ...       |
+## Decision
+<what user chose or deferred>
 ```
 
-Let user push back. Revise without defending.
-Stay in Phase 2 until direction is genuinely locked — not just accepted.
+## Output
 
----
+- Clear direction or
+- List of options with trade-offs
+- Next step identified
 
-## Phase 3 — Stress-test *(optional)*
+## Next Phase
 
-After direction is chosen, pick **3 most relevant** methods for this specific direction:
-
-```
-Direction locked: <one-sentence summary>
-
-Stress-test options:
-  A) <Method> — <why it fits this direction>
-  B) <Method> — <why it fits this direction>
-  C) <Method> — <why it fits this direction>
-  D) Skip — direction is solid
-
-Which?
-```
-
-Available: `Pre-mortem` · `Inversion` · `Red Team` · `Assumption Surfacing` · `Threat Modeling` · `Second-Order Effects` · `Edge Case Hunting` · `First Principles`
-
-Skip Phase 3 for light tasks or clearly solid directions.
-
----
-
-## Closing
-
-When user approves direction:
-
-```
-[workflow:brainstorming] Complete
-
-Goal: <one sentence>
-Approach: <chosen option + core reason>
-Constraints locked: <list or "none">
-Key decisions: <list>
-Ruled out: <list or "none">
-Deferred to spec: <open questions>
-
-Next: spec-formation
-```
-
-Brainstorm summary lives in conversation only — no files needed.
-
----
-
-## Rules
-
-- No implementation details before direction is locked
-- Counter-arguments must have specific evidence, not just "some people think X"
-- No trivial questions — every question must change understanding if answered differently
-- Phase 3 optional — skip if direction is clearly solid
-
-## Output Format
-
-- **Concise** — lead with the point, cut preamble and filler
-- **Structured** — use bullet lists, tables, or labeled sections; avoid prose paragraphs
-- **Icons for orientation:** 📌 key point · 💡 insight · ⚠️ risk · ❌ ruled out · ✅ confirmed · 🔄 process
-- Questions grouped under a bold label (e.g. **Scope:** · **Users:** · **Tech:**), not listed as a flat wall
-- No trailing summaries, no restating what the user said
+| Situation | Next Phase |
+|-----------|-------------|
+| Direction clear → spec | `spec-form.md` |
+| Need more thinking | Stay in brainstorm |
+| User wants to proceed | spec-form.md |

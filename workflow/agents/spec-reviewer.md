@@ -1,7 +1,11 @@
 ---
 name: spec-reviewer
-description: Verifies implementation matches the spec exactly — nothing missing, nothing extra.
+description: |
+  Use when: Verifying implementation matches the spec exactly.
+  NOT for: code quality, testing, or general review.
 model: claude-sonnet-4-6
+tools: [Read, Grep, Glob, Bash]
+maxTurns: 20
 ---
 
 # Spec Compliance Review — Task {N}

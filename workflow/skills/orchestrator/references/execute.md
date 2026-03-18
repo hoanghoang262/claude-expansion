@@ -1,124 +1,214 @@
-# Execute
+# Execute Phase
+
+Implement tasks using subagents or agent teams.
+
+## When to Enter
+
+- Plan ready → need to implement
+- After understand (for bug fixes)
+- User says: "implement", "làm đi", "code"
+
+## Routing: Subagent vs Agent Team
+
+Choose based on task complexity:
+
+| Situation | Solution | Why |
+|-----------|----------|-----|
+| Single task, simple | Subagent (implementer) | Fast, cheap |
+| Single task, complex bug | Agent team (researcher + implementer) | Parallel investigation |
+| Multiple tasks, independent | Multiple subagents in parallel | Speed |
+| Multiple tasks, complex | Agent team (multi-implementer) | Parallel work |
+| Review needed | Subagent (spec/quality reviewer) | Enough |
+
+### Decision Guide
+
+| Scenario | Use | Why |
+|----------|-----|-----|
+| Task < 5 min, trivial (typo, rename) | Do yourself | Too small, spawn agent wastes resources |
+| 1 clear task (add 1 component, 1 API) | Subagent | Small scope, focused |
+| Multiple independent tasks same type | Parallel subagents | No dependency → fast + cheap |
+| Multiple dependent tasks, different domains | Agent team | Need sync: merge intermediate, wait |
+| Review (spec or quality) | Subagent | Always 1 scope, 1 purpose |
+| Research | Subagent | 1-way: ask → answer, no collab needed |
+
+### Summary
+```
+Do yourself:       task < 5 min, trivial
+Subagent:          1 clear task, no coordination needed
+Parallel subagents: multiple INDEPENDENT tasks
+Agent Team:        multiple DEPENDENT tasks, different domains, need sync
+```
+
+## Process
+
+### 1. Load Context
 
 ```
-[workflow:execute] Starting — <slug> | {N} tasks | track: <track>
+Read:
+1. docs/specs/<slug>/spec.md (goal, FRs, SCs)
+2. docs/specs/<slug>/plan.md (tasks)
+3. Relevant codebase
 ```
 
-**Setup (once):** Read `docs/specs/<slug>/spec.md` + relevant codebase.
+### 2. Route Execution
 
-Initialize summary if not exists:
-
+**Simple → Subagent:**
 ```
-.workflow/specs/<slug>/log/summary.md
+Use subagent with agent definition at:
+workflow/agents/implementer.md
+
+Task: {specific task}
+Context: {spec excerpt, relevant files}
 ```
 
----
+**Complex → Agent Team:**
+```
+Create agent team:
+- Teammate 1: researcher (workflow/agents/researcher.md) — investigate approach
+- Teammate 2: implementer (workflow/agents/implementer.md) — build
 
-## Per task loop
+When teammates done → aggregate results
+```
 
-### 1. Task Brief
+### 3. Per Task Loop
+
+#### Task Brief
 
 ```
 [workflow:execute] Task {N}/{total} — <title>
 ```
 
-Produce Task Brief — canonical format in orchestrator SKILL.md.
-HIGH risk → wait for input before dispatching.
+Produce Task Brief:
+- Title, FR mapping
+- Files to create/modify
+- Acceptance criteria
+- Risk notes (if heavy)
 
-### 2. Dispatch implementer
+#### Dispatch Implementer
 
-→ Load `workflow:agents/implementer` — pack spec excerpt, task, relevant codebase context.
+→ Use `workflow/agents/implementer.md`
 
-Implementer asks questions → answer completely → reload.
-Done → result in `.workflow/specs/<slug>/log/task-{N}.md`.
+Pack context:
+- Relevant spec excerpt
+- Full task text
+- Codebase patterns
 
-### 3. Review
+Implementer asks questions → answer completely → reload
 
-**Light:** self-review only → proceed.
+#### Review
+
+**Light:** Self-review only → proceed
 
 **Standard/Heavy:**
 
 ```
-[workflow:review] ⏳ Task {N} — spec compliance
+[workflow:review] Task {N} — spec compliance
 ```
-
-→ Load `workflow:agents/spec-reviewer`
+→ Use `workflow/agents/spec-reviewer.md`
 
 - ✅ → quality review
-- ❌ → re-implement with issues → re-review
+- ❌ → re-implement → re-review
 
 ```
-[workflow:review] ⏳ Task {N} — code quality
+[workflow:review] Task {N} — code quality
 ```
+→ Use `workflow/agents/quality-reviewer.md`
 
-→ Load `workflow:agents/quality-reviewer` — scope: per-task
-
-- ✅ → task approved
-- ❌ Critical/Important → re-implement → re-review
+- ✅ → approved
+- ❌ Critical → re-implement → re-review
 - ❌ Minor → note, proceed
 
-**Circuit breaker:** If the same task fails review twice → stop and surface to user:
-
-```
-[workflow:review] ⚠️ Task {N} — blocked after 2 attempts
-Issue: <what keeps failing>
-Options: A) retry with different approach  B) relax requirement  C) skip task
-```
-
-### 4. Complete
+#### Complete
 
 ```
 [workflow:review] ✅ Task {N} — approved
 ```
 
-Append to `.workflow/specs/<slug>/log/summary.md` tasks table:
+Update task log:
+
+```markdown
+| {N} | <title> | ✅ | <output> | <issues or none> |
+```
+
+### 4. Parallel Tasks
+
+Tasks with no shared files → dispatch concurrently:
 
 ```
-| {N} | <title> | ✅ | <key output — 1 phrase> | <issues or none> |
+[workflow:execute] Dispatching parallel: Task 1, 3, 5
 ```
 
----
+Each task still goes through review independently.
 
-## Parallel tasks
-
-Tasks in same parallel group (no shared files) → dispatch concurrently.
-Each task still goes through full review loop independently.
-
----
-
-## All tasks done
+### 5. All Done
 
 ```
 [workflow:execute] All {N} tasks complete
 ```
 
-→ Final review (see orchestrator SKILL.md: Phase: Final Review).
-→ Doc sync (see orchestrator SKILL.md: Phase: Doc Sync).
-→ Run merge gate (below).
+→ Verify phase
+→ Doc sync (update spec with completion)
 
----
+## Agent Team Pattern
 
-## Merge Gate
+For features requiring multiple expertise or dependent layers.
 
-Run after doc sync. Do not merge without passing.
+### When to use:
+- Feature needs BE + FE integration
+- Refactor multiple related modules
+- Full-stack: DB + API + UI
 
+### Setup:
+- Lead: orchestrator (you)
+- Teammates: split by domain/layer, each gets own worktree
+
+### Flow:
+1. Lead splits scope → each teammate gets work + own worktree
+2. Teammates work PARALLEL
+3. Teammate A finishes → merge into feature branch
+4. Teammate B needs resource from A → pull from feature branch → continue
+5. Repeat until done
+6. Final merge → verify
+
+### Example: Build login feature
 ```
-[workflow:merge-gate] Checking <branch>
+Teammate A (BE): auth API, JWT, DB schema
+  → worktree: .worktrees/login-be
+
+Teammate B (FE): login form, validation, API integration
+  → worktree: .worktrees/login-fe
+
+Flow:
+  A + B run parallel
+  A finishes API endpoints → merge to feat/login
+  B pulls feat/login → integrate with API
+  B finishes → merge to feat/login
+  → verify → done
 ```
 
-Check:
+### DO NOT use agent team for:
+- Independent tasks → use parallel subagents (cheaper)
+- Research → use subagent researcher (1-way task)
+- Review → use subagent reviewer (1 scope)
 
-- [ ] All tasks in summary.md are ✅
-- [ ] `git diff main..HEAD` — no debug code, hardcoded values, leftover TODOs
-- [ ] Tests pass (if project has test runner)
-- [ ] Doc sync complete
+## Docs Responsibility
 
-Pass → report:
+| Action | Docs to update |
+|--------|----------------|
+| Implementation done | `docs/specs/<slug>/spec.md` (SC marked done) |
+| Code patterns | Code comments |
+| Findings | `.workflow/log/` |
 
-```
-[workflow:done] <branch> ready to merge.
-Changes: <git diff --stat summary>
-Merge into main?
-```
+## Output
 
-Fail → list what's missing. Do not merge.
+- All tasks implemented
+- Review passed
+- Commits made
+
+## Jump to Next Phase
+
+| Situation | Next Phase |
+|-----------|-------------|
+| All tasks done | `verify.md` |
+| Task failed 2x | Surface to user |
+| Need more info | Ask user |

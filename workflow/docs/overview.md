@@ -1,111 +1,74 @@
 # Workflow Plugin — Overview
 
-A structured AI-driven development framework. Solves AI's primary failure: acting before understanding. Enforces intent clarity before execution, gives AI high autonomy within those bounds, keeps spec/code/docs in sync.
+A structured AI-driven development framework. Intent-driven workflow orchestrator.
 
 ## Core Thesis
 
 > AI owns execution. User owns intent and strategic direction.
-> Plan before acting. Surface only irreversible or strategic decisions.
+> Plan before acting. Docs is xương sống — xuyên suốt, không phải phase cuối.
 
-## How It Works
+## Intent Router
 
-Every session, the orchestrator skill is injected at start. It routes to the right skill based on current phase and intent.
+| User says | Jump to |
+|-----------|---------|
+| "build", "implement", "thêm" | spec-form.md |
+| "fix", "bug", "sửa" | understand.md |
+| "research", "tìm hiểu" | research.md |
+| "review", "check" | verify.md |
+| "docs", "tài liệu" | doc-sync.md |
 
-```
-User request
-  ├─ Strategic ambiguity? → brainstorming → direction locked
-  └─ Intent clear → spec-formation → approved spec
-                         ↓
-                   task-breakdown → tasks.md
-                         ↓
-                      execute → subagents implement + review
-                         ↓
-                     doc-sync → docs updated
-                         ↓
-                   merge gate → confirm before merging to main
-```
+## Phases
 
-## Skills
+| Phase | Reference | Purpose |
+|-------|-----------|---------|
+| Understand | `references/understand.md` | Analyze context |
+| Spec | `references/spec-form.md` | Create spec |
+| Plan | `references/plan.md` | Break into tasks |
+| Execute | `references/execute.md` | Implement |
+| Verify | `references/verify.md` | Test & review |
+| Doc Sync | `references/doc-sync.md` | Update docs |
 
-| Skill | Role |
-|-------|------|
-| `orchestrator` | Session router — injects at start, routes by intent + track |
-| `brainstorming` | Optional — for strategic ambiguity only |
-| `spec-formation` | Draft → clarify → lock. Two phases: clarify and lock |
-| `task-breakdown` | Decompose approved spec into parallel-safe tasks |
-| `execute` | Task Brief + subagent per task + two-stage review + merge gate |
-| `doc-sync` | Update only affected docs after delivery |
-| `spec-amendment` | Guarded process for changing locked spec |
+## Agents
 
-## Slash Commands
+| Agent | Role | Tools |
+|-------|------|-------|
+| implementer | Write code | Read, Grep, Glob, Write, Edit, Bash |
+| spec-reviewer | Verify spec compliance | Read, Grep, Glob, Bash |
+| quality-reviewer | Code quality | Read, Grep, Glob, Bash |
+| researcher | Investigation | Read, Grep, Glob, WebSearch, WebFetch, Bash |
+| doc-syncer | Update docs | Read, Grep, Glob, Write, Edit, Bash |
 
-| Command | Action |
-|---------|--------|
-| `/brainstorm [topic]` | Force brainstorming |
-| `/spec [topic]` | Force spec-formation |
-| `/tasks` | Force task-breakdown |
-| `/execute` | Force execute |
-| `/amend <change>` | Force spec-amendment |
+## Task Scope
 
-Commands bypass orchestrator judgment. Use when you want to explicitly assign a phase.
-
-## Task Brief
-
-AI outputs a **Task Brief** before every task with explicit reasoning:
-```
-[Task Brief]
-Track: STANDARD
-Reasoning:
-  - reversibility: ✅ code only, revert safe
-  - blast_radius:  ⚠️ affects 2 modules
-  - coordination:  ✅ none
-  - testability:   ✅ unit test sufficient
-Plan: <what + how>
-Risk: NONE | LOW | HIGH
-Action: proceeding | ⚠️ need input: <question>
-```
-
-HIGH risk = asks first. LOW/NONE = proceeds immediately.
+| Scope | Effort | Mode |
+|-------|--------|------|
+| Small | <30 min | Do yourself or single subagent |
+| Medium | 30-120 min | 1-2 subagents |
+| Large | >120 min | Agent team |
 
 ## Project State
 
-Project state is split across two locations:
-
 ```
-docs/specs/<slug>/
-└── spec.md                       # locked contract (long-term, source of truth)
+docs/
+├── PROJECT.md                    # constraints, tech stack
+├── specs/<slug>/spec.md          # feature spec
+└── features/                     # feature docs
 
 .workflow/
-├── PROJECT.md                    # identity, constraints, key decisions
-├── brainstorm/
-│   └── <N>-<topic>.md
-└── specs/<slug>/                 # one folder per feature, named by slug
-    ├── tasks.md                  # execution breakdown
-    └── log/
-        ├── summary.md            # ← read this first — task status + decisions
-        ├── task-1.md             # implementer output
-        ├── task-2.md
-        ├── review-1.md           # reviewer output
-        └── review-2.md
+├── understand/                   # analysis logs
+└── specs/<slug>/log/            # execution logs
 ```
 
-`summary.md` is the index per feature: AI reads it at session start to resume context without parsing all log files.
+## Docs is Xương Sống
 
-## Docs
+Every phase MUST update relevant docs — not just at the end.
 
-| Doc | Content |
-|-----|---------|
-| `principles.md` | Core beliefs + responsibility split + AI operating principles |
-| `spec-lifecycle.md` | Spec states: draft → approved |
-| `task-model.md` | What a task is and how it's structured |
-| `orchestration.md` | Orchestrator + subagent model |
-| `review-model.md` | Two-stage review + SC Verification |
-| `docs-architecture.md` | Long-term vs temp docs, promote rules |
-
-## Hook
-
-`hooks/session_start.py` — injects orchestrator skill at every session start.
-
-## Init Script
-
-`scripts/init_workflow.py` — scaffolds `.workflow/` in user projects.
+| Phase | Docs to update |
+|-------|----------------|
+| Understand | PROJECT.md (if needed) |
+| Spec | docs/specs/<slug>/spec.md |
+| Plan | docs/specs/<slug>/plan.md |
+| Execute | Spec + code comments |
+| Verify | docs/specs/<slug>/spec.md (SC results) |
+| Research | docs/architecture/ hoặc docs/features/ |
+| Doc Sync | All relevant docs |

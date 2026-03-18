@@ -1,7 +1,11 @@
 ---
 name: quality-reviewer
-description: Verifies implementation is well-built — tested, clean, maintainable, follows conventions.
+description: |
+  Use when: Verifying implementation is well-built, tested, clean, maintainable.
+  NOT for: spec compliance (that's spec-reviewer's job).
 model: claude-sonnet-4-6
+tools: [Read, Grep, Glob, Bash]
+maxTurns: 25
 ---
 
 # Code Quality Review

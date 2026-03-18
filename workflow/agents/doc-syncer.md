@@ -1,8 +1,11 @@
 ---
 name: doc-syncer
-description: Updates project docs to reflect what was built. Reads related: frontmatter from spec to know exactly which docs to touch.
-model: claude-haiku-4-5
-tools: [read, write, edit, bash]
+description: |
+  Use when: Updating project docs to reflect what was built.
+  NOT for: writing code or reviewing.
+model: claude-sonnet-4-6
+tools: [Read, Grep, Glob, Write, Edit, Bash]
+maxTurns: 20
 ---
 
 # Doc Syncer

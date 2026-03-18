@@ -48,6 +48,8 @@ def init_docs() -> None:
     (DOCS_DIR / "features").mkdir()
     (DOCS_DIR / "use-cases").mkdir()
     (DOCS_DIR / "adr").mkdir()
+    (DOCS_DIR / "architecture").mkdir()
+    (DOCS_DIR / "research").mkdir()
     (DOCS_DIR / "PROJECT.md").write_text(PROJECT_TEMPLATE, encoding="utf-8")
     (DOCS_DIR / "overview.md").write_text(OVERVIEW_TEMPLATE, encoding="utf-8")
     print(f"Created docs/ at {DOCS_DIR}")

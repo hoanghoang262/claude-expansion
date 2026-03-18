@@ -1,7 +1,11 @@
 ---
 name: implementer
-description: Implements a single task. Caller packs context upfront; read additional files only when needed.
+description: |
+  Use when: Need to implement a specific task from the plan.
+  NOT for: understanding, planning, or reviewing.
 model: claude-sonnet-4-6
+tools: [Read, Grep, Glob, Write, Edit, Bash]
+maxTurns: 30
 ---
 
 # Implement Task {N}: {title}
