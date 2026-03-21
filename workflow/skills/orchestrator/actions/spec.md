@@ -1,0 +1,52 @@
+# spec — Technical Design
+
+## Step 1: Load context (in parallel)
+
+```
+docs/features/{id}/requirement.md
+docs/PROJECT.md
+docs/standards/CONVENTIONS.md
+docs/standards/STRUCTURE.md
+```
+
+## Step 2: Detect ambiguities
+
+Run the clarify workflow (see `resource/spec-kit/templates/commands/clarify.md`):
+
+```
+Ambiguous user stories?
+Missing edge cases?
+Observable acceptance criteria?
+Technical constraints unclear?
+```
+
+→ If ambiguities found → ask user max 5 questions (all at once)
+→ If clear → Step 3
+
+## Step 3: Draft spec.md
+
+Use `resource/spec-kit/templates/spec-template.md` as skeleton.
+
+Required sections:
+```
+- Overview (2-3 sentences)
+- Data model (entities, fields, types)
+- API endpoints (if applicable)
+- Component design (if applicable)
+- File changes (create/modify/delete)
+- Verification criteria (observable behaviors)
+```
+
+## Step 4: Present to user
+
+Display the full spec.
+
+Request: `"status: approved"` in frontmatter to mark done.
+
+If user requests changes → update spec.md → re-present.
+
+## Step 5: Archive non-obvious decisions
+
+```
+Non-obvious tech decisions → docs/research/
+```

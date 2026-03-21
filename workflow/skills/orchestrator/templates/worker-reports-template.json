@@ -1,0 +1,285 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://orchestrator.claude.dev/worker-reports/v1",
+  "title": "Worker Report",
+  "description": "Machine-readable handover document produced by an Executor subagent after completing a micro-task. Written to docs/worker-reports/{feature-id}/{task-id}.json. Lifespan: VERSION — deleted on Version Release.",
+  "type": "object",
+  "required": ["task_id", "feature_id", "status", "executor", "timestamp", "files_modified", "expected_interface", "outstanding_bugs", "test_coverage"],
+  "additionalProperties": false,
+
+  "properties": {
+
+    "task_id": {
+      "type": "string",
+      "pattern": "^TASK-\\d+[a-z]?$",
+      "description": "Task identifier matching PLAN.md micro-task label. Example: TASK-1, TASK-2a."
+    },
+
+    "feature_id": {
+      "type": "string",
+      "description": "Feature identifier matching the feature folder name. Format: {id}-{name}. Example: auth-login, dashboard-main."
+    },
+
+    "status": {
+      "type": "string",
+      "enum": ["completed", "failed", "blocked"],
+      "description": "Task completion status. Use 'blocked' only when the blocker cannot be resolved without human decision."
+    },
+
+    "executor": {
+      "type": "string",
+      "description": "Agent type that produced this report. Example: executor-subagent, executor-frontend."
+    },
+
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of when the task was completed. Example: 2026-03-19T10:30:00Z."
+    },
+
+    "files_modified": {
+      "type": "array",
+      "description": "List of all source files created, modified, or deleted during this task.",
+      "items": {
+        "type": "object",
+        "required": ["path", "action", "description"],
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Relative path from project root. Example: src/components/LoginForm.tsx"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["create", "modify", "delete"],
+            "description": "Action taken on this file."
+          },
+          "description": {
+            "type": "string",
+            "description": "One-line plain-text summary of what changed in this file."
+          }
+        }
+      }
+    },
+
+    "expected_interface": {
+      "type": "object",
+      "description": "Contract exposed to the next worker that will consume this task's output. Required for all tasks that produce callable code (components, functions, APIs).",
+      "required": ["component_name", "props", "exports"],
+      "properties": {
+        "component_name": {
+          "type": "string",
+          "description": "Primary identifier of the exported item. Example: LoginForm, useAuth."
+        },
+        "props": {
+          "type": "object",
+          "description": "Key-value map of prop/parameter names to their types. Values use TypeScript-like type strings.",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "example": {
+            "onSuccess": "() => void",
+            "onError": "(error: Error) => void",
+            "email": "string"
+          }
+        },
+        "exports": {
+          "type": "array",
+          "description": "All named exports from this module. Used by the next worker to import correctly.",
+          "items": { "type": "string" },
+          "example": ["LoginForm", "LoginFormProps"]
+        }
+      }
+    },
+
+    "api_endpoints": {
+      "type": "array",
+      "description": "API routes or endpoints created or modified. Empty array if no API work was done.",
+      "items": {
+        "type": "object",
+        "required": ["method", "path", "handler"],
+        "properties": {
+          "method": { "type": "string", "example": "POST" },
+          "path":   { "type": "string", "example": "/api/auth/login" },
+          "handler":{ "type": "string", "example": "src/api/auth/login.ts:handleLogin" }
+        }
+      }
+    },
+
+    "outstanding_bugs": {
+      "type": "array",
+      "description": "Bugs discovered during implementation that were not fixed. Never omit known bugs — list them here so the next worker is warned.",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "description", "location"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^BUG-\\d+$",
+            "description": "Bug identifier. Example: BUG-1."
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "Impact level. high = blocks functionality, medium = degrades UX, low = cosmetic."
+          },
+          "description": {
+            "type": "string",
+            "description": "Plain-text description of the bug behavior."
+          },
+          "location": {
+            "type": "string",
+            "description": "File path with line number if known. Example: src/auth/tokenRefresh.ts:45."
+          },
+          "workaround": {
+            "type": "string",
+            "description": "Optional temporary workaround for the next worker. Example: Refresh page manually."
+          }
+        }
+      }
+    },
+
+    "dependencies_introduced": {
+      "type": "array",
+      "description": "New npm/pip packages or internal modules added. Used by the next worker to install before running.",
+      "items": {
+        "type": "object",
+        "required": ["name", "version", "reason"],
+        "properties": {
+          "name":    { "type": "string", "example": "zod" },
+          "version": { "type": "string", "example": "^3.0.0" },
+          "reason":  { "type": "string", "example": "Schema validation for API request bodies" }
+        }
+      }
+    },
+
+    "test_coverage": {
+      "type": "object",
+      "description": "Tests written alongside the implementation.",
+      "required": ["unit_tests"],
+      "properties": {
+        "unit_tests": {
+          "type": "array",
+          "description": "Paths to unit test files created. May be empty.",
+          "items": { "type": "string" },
+          "example": ["src/components/LoginForm.test.tsx"]
+        },
+        "integration_tests": {
+          "type": "array",
+          "description": "Paths to integration or E2E test files created. May be empty.",
+          "items": { "type": "string" }
+        }
+      }
+    },
+
+    "handoff_notes": {
+      "type": "string",
+      "description": "Optional plain-text notes for the next worker. Keep concise. One to three sentences max. Use this for non-machine-readable context like environment variables, feature flags, or cross-cutting concerns."
+    },
+
+    "deviations_from_plan": {
+      "type": "array",
+      "description": "Changes made during execution that differ from what was planned in PLAN.md. Required — always be honest about deviations.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "planned":  { "type": "string", "description": "What was planned in PLAN.md." },
+          "actual":   { "type": "string", "description": "What was actually done." },
+          "reason":   { "type": "string", "description": "Why it deviated." }
+        }
+      }
+    }
+  },
+
+  "examples": [
+
+    {
+      "task_id": "TASK-3",
+      "feature_id": "auth-login",
+      "status": "completed",
+      "executor": "executor-frontend",
+      "timestamp": "2026-03-19T10:30:00Z",
+      "files_modified": [
+        {
+          "path": "src/components/LoginForm.tsx",
+          "action": "create",
+          "description": "Login form with email/password fields, validation, and error display"
+        },
+        {
+          "path": "src/hooks/useAuth.ts",
+          "action": "create",
+          "description": "Authentication hook exposing login(), logout(), and user state"
+        }
+      ],
+      "expected_interface": {
+        "component_name": "LoginForm",
+        "props": {
+          "onSuccess": "() => void",
+          "onError":   "(error: Error) => void"
+        },
+        "exports": ["LoginForm"]
+      },
+      "api_endpoints": [],
+      "outstanding_bugs": [],
+      "dependencies_introduced": [],
+      "test_coverage": {
+        "unit_tests": ["src/components/LoginForm.test.tsx", "src/hooks/useAuth.test.ts"],
+        "integration_tests": []
+      },
+      "handoff_notes": "Auth token stored in localStorage under key 'auth_token'. The API coder must include a Bearer token in the Authorization header. Token refresh logic is NOT implemented — see spec.md.",
+      "deviations_from_plan": []
+    },
+
+    {
+      "task_id": "TASK-7",
+      "feature_id": "auth-login",
+      "status": "blocked",
+      "executor": "executor-backend",
+      "timestamp": "2026-03-19T11:45:00Z",
+      "files_modified": [
+        {
+          "path": "src/api/auth/login.ts",
+          "action": "create",
+          "description": "Login endpoint stub — returns mock token, real DB integration pending"
+        }
+      ],
+      "expected_interface": {
+        "component_name": "loginApi",
+        "props": {
+          "email":    "string",
+          "password": "string"
+        },
+        "exports": ["loginApi"]
+      },
+      "api_endpoints": [
+        {
+          "method": "POST",
+          "path": "/api/auth/login",
+          "handler": "src/api/auth/login.ts:handleLogin"
+        }
+      ],
+      "outstanding_bugs": [
+        {
+          "id": "BUG-1",
+          "severity": "high",
+          "description": "Login endpoint uses mock token — password verification not implemented",
+          "location": "src/api/auth/login.ts:12",
+          "workaround": "Use the mock token directly for testing"
+        }
+      ],
+      "dependencies_introduced": [],
+      "test_coverage": {
+        "unit_tests": ["src/api/auth/login.test.ts"],
+        "integration_tests": []
+      },
+      "handoff_notes": "BLOCKED: waiting for user decision on DB ORM choice (Prisma vs Drizzle). Until resolved, this endpoint returns a hardcoded mock token.",
+      "deviations_from_plan": [
+        {
+          "planned": "Full JWT auth with password hashing and DB lookup",
+          "actual": "Stub endpoint returning mock token",
+          "reason": "DB ORM decision pending from user"
+        }
+      ]
+    }
+
+  ]
+}
