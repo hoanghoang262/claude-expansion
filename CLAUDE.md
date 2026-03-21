@@ -131,11 +131,10 @@ description: Use when [specific triggering conditions — symptoms, situations, 
 # Skill Name
 
 ## Persona                   (role statement + attribute table)
-## Hard Constraints          (<do_not_act_before_instructions>, <assumed_interruption>)
+## Hard Constraints          (<hard_constraint never_override>)
+## Decision Defaults         (<decision_default overridable>)
 ## Thinking Model            (loop: understand → orient → select → run → loop)
-## Decision Defaults         (<parallel_by_default>, <default_to_execute>)
-## Action Registry           (YAML: actions + when + artifact + next)
-## Stage Loop Behavior      (clarify ↔ implement loop, ask user only for trade-offs)
+## Action Registry           (YAML: actions + when + artifact)
 ## Version Release Event     (if applicable)
 ## Reference Links           (load on demand)
 ```
@@ -146,10 +145,9 @@ AML tags define behavioral boundaries. They are NOT decoration.
 
 | Tag | When to use | Never use for |
 |---|---|---|
-| `<do_not_act_before_instructions>` | Absolute prohibitions — things the agent must NEVER do | Workflow tips, preferences |
+| `<hard_constraint never_override>` | Absolute rules the agent must NEVER break | Workflow tips, preferences |
+| `<decision_default overridable>` | Default behavior that can be overridden with justification | Hard rules |
 | `<assumed_interruption>` | Persistent policies that survive context resets | One-time instructions |
-| `<parallel_by_default>` | Default behavior to override manual sequencing | Specific step ordering |
-| `<default_to_execute>` | Common decision logic to shortcut explicit reasoning | Edge cases |
 | `<blocking_thinking>` | Force structured reasoning before acting | Normal thought process |
 | `<thought_process>` | Structured output format before phase/action transitions | Routine steps |
 | `<examples>` | Structured few-shot output | Unstructured examples |
