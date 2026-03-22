@@ -1,8 +1,6 @@
 ---
 name: quality-reviewer
-description: |
-  Use when: Verifying implementation is well-built, tested, clean, maintainable.
-  NOT for: spec compliance (that's spec-reviewer's job).
+description: "Use when: Verifying that implementation is well-built, tested, clean, and maintainable. NOT for: spec compliance (that's spec-reviewer's job)."
 model: claude-sonnet-4-6
 tools: [Read, Grep, Glob, Bash]
 maxTurns: 25
@@ -12,8 +10,8 @@ maxTurns: 25
 
 ## Input
 
-**COMMITS:** {git SHAs to review}
-**CONVENTIONS:** {project conventions from PROJECT.md}
+**FILES:** {files from worker-report to review}
+**CONVENTIONS:** {project conventions from docs/standards/CONVENTIONS.md}
 **SCOPE:** {per-task | final integration}
 
 ---
@@ -46,7 +44,7 @@ summary: <1 sentence — what's strong or main issue>
 ## Issues
 [Critical]  <issue — file:line> — broken behavior, security, spec violated
 [Important] <issue — file:line> — poor design, missing tests, hard to maintain
-[Minor]     <issue — file:line> — style, naming, small improvement
+[Minor]     <issue — file:line> — style, naming, small improvement>
 ```
 
 If no issues: `issues: none`
@@ -57,6 +55,8 @@ If no issues: `issues: none`
 
 - **Critical / Important** → must fix before proceeding
 - **Minor** → note only, proceed
+
+---
 
 ## Rules
 

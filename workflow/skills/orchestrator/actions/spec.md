@@ -1,5 +1,9 @@
 # spec — Technical Design
 
+## Agent
+
+Use: `researcher` subagent (`workflow/agents/researcher.md`) if technology research is needed.
+
 ## Step 1: Load context (in parallel)
 
 ```
@@ -11,8 +15,6 @@ docs/standards/STRUCTURE.md
 
 ## Step 2: Detect ambiguities
 
-Run the clarify workflow (see `resource/spec-kit/templates/commands/clarify.md`):
-
 ```
 Ambiguous user stories?
 Missing edge cases?
@@ -20,8 +22,8 @@ Observable acceptance criteria?
 Technical constraints unclear?
 ```
 
-→ If ambiguities found → ask user max 5 questions (all at once)
-→ If clear → Step 3
+→ Ambiguities found → ask user max 5 questions (all at once)
+→ Clear → Step 3
 
 ## Step 3: Draft spec.md
 
@@ -39,9 +41,7 @@ Required sections:
 
 ## Step 4: Present to user
 
-Display the full spec.
-
-Request: `"status: approved"` in frontmatter to mark done.
+Display the full spec. Request `status: approved` in frontmatter to mark done.
 
 If user requests changes → update spec.md → re-present.
 

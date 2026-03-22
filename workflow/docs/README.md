@@ -2,7 +2,7 @@
 
 ## Role
 
-This is the **physical memory** of the project. Orchestrator reads and writes here instead of relying on conversation history.
+This is the **factual memory** of the project. Orchestrator reads and writes here instead of relying on conversation history.
 
 ## Three Memory Layers
 
@@ -29,17 +29,17 @@ docs/
 │   │       ├── spec.md            ← Technical design
 │   │       ├── PLAN.md           ← Micro-tasks + waves (after planning)
 │   │       └── UAT.md            ← User acceptance test log
-│   ├── standards/                   ← Supreme rule set
+│   ├── standards/                ← Supreme rule set
 │   │   ├── CONVENTIONS.md        ← Coding style, naming
 │   │   ├── STRUCTURE.md          ← Folder structure
 │   │   ├── STACK.md             ← Tech stack
 │   │   └── TESTING.md           ← Testing strategy
-│   ├── research/                    ← Technology knowledge
-│   └── concerns/                    ← Technical debt, risks
+│   ├── research/                 ← Technology knowledge
+│   └── concerns/                  ← Technical debt, risks
 │
 ├── [VERSION]
 │   ├── ROADMAP.md               ← Version phases (delete on release)
-│   └── worker-reports/             ← Handover context (delete on release)
+│   └── worker-reports/          ← Handover context (delete on release)
 │       └── {feature-id}/
 │           └── {task}.json
 │

@@ -5,7 +5,7 @@
 ```
 Walk up from cwd to find docs/ directory.
 If found → project_root = parent of docs/
-If not found → no project yet → → discuss (new project)
+If not found → no project yet → start new project flow
 ```
 
 ## Step 2: Read existing docs (in parallel)
@@ -27,7 +27,7 @@ docs/PROJECT.md absent?
 
 STATE.md absent or corrupted?
   → Re-orient via ROADMAP.md + features/
-  → Write clean STATE.md (see below)
+  → Write clean STATE.md
 
 docs/ exists, STATE.md says "ready"?
   → Read user request → SELECT next action
@@ -54,19 +54,17 @@ Use `templates/state-template.md`.
 
 ## Step 5: Select next action
 
-Based on what exists in docs/:
-
-| Situation                               | Next Action       |
-| --------------------------------------- | ----------------- |
-| No features in ROADMAP                  | `discuss`         |
-| Features in ROADMAP, no requirement yet | `discuss`         |
-| Requirement exists, no spec             | `spec`            |
-| Spec exists, not approved               | `spec`            |
-| Spec approved, no PLAN                  | `plan`            |
-| PLAN exists, worker-reports incomplete  | `execute`         |
-| Worker-reports complete, no UAT         | `verify`          |
-| UAT all pass                            | `doc-sync`        |
-| All features done                       | `version-release` |
+| Situation | Next Action |
+|---|---|
+| No features in ROADMAP | `discuss` |
+| Features in ROADMAP, no requirement yet | `discuss` |
+| Requirement exists, no spec | `spec` |
+| Spec exists, not approved | `spec` |
+| Spec approved, no PLAN | `plan` |
+| PLAN exists, worker-reports incomplete | `execute` |
+| Worker-reports complete, no UAT | `verify` |
+| UAT all pass | `doc-sync` |
+| All features done | `version-release` |
 
 ## Init Scaffold
 
@@ -74,16 +72,16 @@ Create automatically when docs/PROJECT.md is absent. Do not ask the user first.
 
 ```
 docs/
-├── PROJECT.md           ← empty skeleton
-├── ROADMAP.md          ← empty
-├── STATE.md            ← orient result
+├── PROJECT.md
+├── ROADMAP.md
+├── STATE.md
 ├── standards/
 │   ├── CONVENTIONS.md
 │   ├── STRUCTURE.md
 │   ├── TESTING.md
 │   └── GIT_FLOW.md
-├── research/           ← empty
-├── concerns/           ← empty
-├── versions/           ← empty
-└── features/           ← empty
+├── research/
+├── concerns/
+├── versions/
+└── features/
 ```

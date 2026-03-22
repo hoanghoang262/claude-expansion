@@ -17,11 +17,11 @@ Break the spec into the smallest independently actionable tasks:
 
 For each task:
 ```
-ACTION      — what to do (imperative: "Create", "Implement", "Add")
-FILES       — which files to touch
-VERIFY      — how to verify this is done
+ACTION       — what to do (imperative: "Create", "Implement", "Add")
+FILES        — which files to touch
+VERIFY       — how to verify this is done
 DEPENDENCIES — what must complete first
-REQUIREMENTS — any constraints from spec
+REQUIREMENTS  — any constraints from spec
 ```
 
 ## Step 3: Assign waves
@@ -37,7 +37,7 @@ WAVE 3: Tasks that depend only on Wave 2 → parallel
 
 ## Step 4: Identify blockers
 
-If a task depends on something outside the team's control (vendor API, user decision, etc.):
+If a task depends on something outside the team's control:
 
 ```
 Add checkpoint at the wave boundary:
@@ -57,4 +57,4 @@ Wave assignments are correct?
 
 ## Output
 
-Create `docs/features/{id}/PLAN.md` using `templates/plan-template.md`.
+Create: `docs/features/{id}/PLAN.md` using `templates/plan-template.md`.

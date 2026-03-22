@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://orchestrator.claude.dev/worker-reports/v1",
   "title": "Worker Report",
-  "description": "Machine-readable handover document produced by an Executor subagent after completing a micro-task. Written to docs/worker-reports/{feature-id}/{task-id}.json. Lifespan: VERSION — deleted on Version Release.",
+  "description": "Machine-readable handover document produced by the implementer subagent after completing a micro-task. Written to docs/worker-reports/{feature-id}/TASK-{N}.json. Lifespan: VERSION — deleted on Version Release.",
   "type": "object",
   "required": ["task_id", "feature_id", "status", "executor", "timestamp", "files_modified", "expected_interface", "outstanding_bugs", "test_coverage"],
   "additionalProperties": false,
@@ -28,7 +28,7 @@
 
     "executor": {
       "type": "string",
-      "description": "Agent type that produced this report. Example: executor-subagent, executor-frontend."
+      "description": "Always: implementer"
     },
 
     "timestamp": {
@@ -196,7 +196,7 @@
       "task_id": "TASK-3",
       "feature_id": "auth-login",
       "status": "completed",
-      "executor": "executor-frontend",
+      "executor": "implementer",
       "timestamp": "2026-03-19T10:30:00Z",
       "files_modified": [
         {
@@ -233,7 +233,7 @@
       "task_id": "TASK-7",
       "feature_id": "auth-login",
       "status": "blocked",
-      "executor": "executor-backend",
+      "executor": "implementer",
       "timestamp": "2026-03-19T11:45:00Z",
       "files_modified": [
         {

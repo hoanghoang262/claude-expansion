@@ -1,9 +1,9 @@
 # discuss — Requirements Gathering
 
-## Orchestrator asks the user in exactly 2 scenarios:
+## When Orchestrator asks the user
 
 1. **Entering discuss:** gather or clarify requirements
-2. **During any action:** a trade-off decision arises that AI cannot resolve alone
+2. **During any action:** a trade-off decision that AI cannot resolve alone
 
 ## Step 1: Read existing context (in parallel)
 
@@ -21,8 +21,8 @@ User describes a COMPLETELY NEW feature?
   → YES → New feature → Step 3
 
 Feature already in features/?
-  → Yes, spec exists? → spec (skip discuss)
-  → Yes, spec absent? → read requirement.md → spec
+  → Yes, spec exists? → `spec` (skip discuss)
+  → Yes, spec absent? → read requirement.md → `spec`
   → No → New feature → Step 3
 ```
 
@@ -50,7 +50,7 @@ Description VAGUE?
 1. Create: docs/features/{id}-{name}/requirement.md
    Use: templates/requirement-template.md
 2. Update: docs/ROADMAP.md (add feature to milestone)
-3. → spec
+3. Output artifact: docs/features/{id}/requirement.md
 ```
 
 ## Step 4b: Need clarification

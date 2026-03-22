@@ -1,8 +1,6 @@
 ---
 name: doc-syncer
-description: |
-  Use when: Updating project docs to reflect what was built.
-  NOT for: writing code or reviewing.
+description: "Use when: Updating project docs to reflect what was built — after a feature or task completes. NOT for: writing code, reviewing, or implementing."
 model: claude-sonnet-4-6
 tools: [Read, Grep, Glob, Write, Edit, Bash]
 maxTurns: 20
@@ -12,18 +10,17 @@ maxTurns: 20
 
 ## Input
 
-**SPEC_PATH:** {path to docs/specs/<slug>/spec.md}
-**COMMITS:** {git log --oneline output}
-**TRACK:** {light | standard | heavy}
+**SPEC:** `docs/features/{id}/spec.md`
+**WORKER_REPORTS:** `docs/worker-reports/{id}/*.json` (all reports from this feature)
+**CHANGES:** {git log --oneline output}
 
 ---
 
 ## Process
 
-### Step 1 — Read related: from spec
+### Step 1 — Read related
 
-Read `SPEC_PATH` frontmatter:
-
+Read SPEC frontmatter `related:` field:
 ```yaml
 related:
   feature: docs/features/<name>.md
@@ -32,23 +29,18 @@ related:
 ```
 
 - `related:` has entries → update/create exactly those files
-- `related:` empty → read COMMITS, find what changed, identify affected docs manually
+- `related:` empty → read CHANGES, find what changed, identify affected docs manually
 
-### Step 2 — Determine what to update
+### Step 2 — What to update
 
 | What changed | Doc to update |
 |---|---|
-| New feature or behavior change | `docs/features/<name>.md` — describe what it does, not how |
+| New feature or behavior change | `docs/features/<name>.md` — what it does, not how |
 | User-facing flow or interaction | `docs/use-cases/<name>.md` — user perspective |
 | Architectural decision locked | New ADR: `docs/adr/YYYY-MM-DD-<slug>.md` |
 | Big-picture system change | `docs/overview.md` only if whole-system understanding shifts |
 | Bug fix | Nothing — unless it reveals a design correction |
 | Refactor / rename | Nothing — unless public behavior changed |
-
-**By track:**
-- `light` → skip unless public behavior changed
-- `standard` → update affected docs, add ADR if architectural
-- `heavy` → full assessment — overview, all related docs, ADRs
 
 ### Step 3 — Write / update
 
@@ -75,10 +67,7 @@ Status: accepted
 <what this enables, what it constrains>
 ```
 
-ADRs are immutable. If superseded, create a new ADR and update old one's status:
-```
-Status: superseded by docs/adr/<date>-<slug>.md
-```
+ADRs are immutable. If superseded: create new ADR, update old one's status to `superseded by docs/adr/<date>-<slug>.md`.
 
 ### Step 4 — Report
 
