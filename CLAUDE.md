@@ -198,6 +198,33 @@ These are reference implementations for building new plugins and skills. Study `
 
 ## Workflow Plugin — Key Conventions
 
+### Escalation Protocol (Iteration 1, 2026-03-22)
+
+Agent ALWAYS tries lower tier before escalating.
+
+```
+Tier 1 — Self-resolve (default):
+  Fix, research, work around, adjust plan.
+  Never stop work for Tier 1 issues.
+
+Tier 2 — CONCERN (internal):
+  Log to docs/concerns/ for other agents to read.
+  Orchestrator checks concerns after each wave / action transition.
+  Resolution → log into the concern file.
+  Do NOT present to user.
+
+Tier 3 — USER NOTIFY (exceptional):
+  ONLY after Tier 1 + Tier 2 exhausted.
+  Format: [1] issue  [2] what was tried  [3] options + trade-offs  [4] recommended
+  User decides. Agent proceeds after response.
+```
+
+**Tier 3 ONLY for:** external dependency failure | blocker with significant long-term consequence | spec/plan gap discovered mid-execution.
+
+**NOT Tier 3:** minor bugs → Tier 1 | code smell → Tier 2 | missing spec detail → "Spec does not cover X. Cannot proceed until updated."
+
+**Concerns are NOT presented to user** — they are internal agent-to-agent sticky notes. User is notified only at Tier 3.
+
 ### Three-Tier Memory Lifecycle
 
 ```
@@ -225,8 +252,10 @@ docs/
 2. Create docs/versions/v{x}.md
 3. DELETE docs/worker-reports/
 4. CLEAR ROADMAP.md entirely
-5. KEEP docs/features/* unchanged
+5. KEEP docs/features/*, docs/concerns/*, docs/standards/* unchanged
 ```
+
+> All open concerns (status: open) are reviewed before version release. Only Tier 3 concerns that remain unresolved block release — Tier 2 concerns (logged but non-blocking) do not block.
 
 ### Skill Writing Conventions
 
@@ -297,7 +326,8 @@ Level 3 — references/ + scripts/ (loaded on demand, no size limit)
 | Content | Location |
 |---|---|---|
 | Reasoning logic, routing strategy, PM mindset | SKILL.md body |
-| Step-by-step phase procedures | references/{phase}.md |
+| Step-by-step phase procedures | actions/{phase}.md |
+| Escalation/concern policy | references/concerns-workflow.md |
 | Concrete formats, JSON schemas | templates/*.json |
 | Executable helpers | scripts/*.py |
 
@@ -307,12 +337,13 @@ Level 3 — references/ + scripts/ (loaded on demand, no size limit)
 - Never duplicate template content in references/.
 - Every file path in SKILL.md must have a lifespan label: `[PERMANENT]`, `[VERSION]`, `[SESSION]`.
 - Before deploying a new skill: use `superpowers:writing-skills` RED-GREEN-REFACTOR process. No skill without a failing test first.
+- Escalation protocol (Tier 1/2/3) is tested. See `workflow/skills/orchestrator/eval/` for eval workspace. Run new tests whenever escalation rules change.
 
 **Self-ask patterns — use lists, not prose:**
 ```
 Before spawning agents:
   - Is the plan approved by user? → No → Stop. Ask for approval.
-  - Are there pending checkpoints? → Yes → Stop. Present to user.
+  - Is there a Tier 3 escalation unresolved? → Yes → USER NOTIFY first.
 ```
 Lists with arrow outcomes are readable by AI and easy to verify.
 

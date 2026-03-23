@@ -37,14 +37,19 @@ docs/standards/TESTING.md
 2c. Read all worker-reports from docs/worker-reports/{id}/
 ```
 
-## Step 3: Check checkpoint
+## Step 3: Escalation check (after each wave)
 
-| Type | Action |
+Before spawning implementers, read `docs/concerns/*.md` for open CONCERNs. Pass relevant CONCERN IDs to each implementer's context so they know what concerns exist.
+
+After each wave — check worker-reports:
+
+| Result | Action |
 |---|---|
-| `checkpoint:human-verify` | Stop. Present to user. Wait. → PASS: continue / FAIL: fix |
-| `checkpoint:decision` | Stop. Present options to user. Wait. → continue with chosen |
-| `checkpoint:human-action` | Stop. Give instructions to user. Wait. → continue |
-| No checkpoint | Continue to next wave |
+| All `completed` | Continue to next wave |
+| Some `escalated` → Tier 3 | See §Escalation Protocol in SKILL.md |
+| Any `failed` → Tier 1 | Retry once (max 3 auto-fix attempts per task) |
+| 3 failures + truly blocked → Tier 3 | See §Escalation Protocol in SKILL.md |
+| All `concerns_logged` populated | Continue |
 
 ## Step 4: Run Wave 2, 3...
 
@@ -75,13 +80,10 @@ WAVE 2 (parallel)
   implementer D --+
 ```
 
-## Deviation Rules
+## Escalation Rules
 
-| # | Trigger | Action |
-|---|---|---|
-| 1 | Minor bug found while coding | Auto-fix inline, log in report |
-| 2 | Missing critical piece | Auto-add inline, log in report |
-| 3 | Blocking issue | Log in blockers, stop wave, ask user |
-| 4 | Architecture change | Stop, ask user decision |
-
-Max 3 auto-fix attempts per task. After 3 failures → log in blockers.
+- **Minor bug / code smell** → Tier 1: auto-fix inline, log in worker-report
+- **Non-blocking design gap** → Tier 2: create CONCERN-*.md, continue
+- **Truly cannot proceed** → Tier 3: USER NOTIFY with options + trade-offs + recommended
+- Max 3 auto-fix attempts per task. After 3 failures → Tier 2 CONCERN → proceed if possible
+- After 3 failures + truly blocked → Tier 3 USER NOTIFY

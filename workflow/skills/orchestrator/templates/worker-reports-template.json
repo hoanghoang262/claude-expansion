@@ -4,7 +4,7 @@
   "title": "Worker Report",
   "description": "Machine-readable handover document produced by the implementer subagent after completing a micro-task. Written to docs/worker-reports/{feature-id}/TASK-{N}.json. Lifespan: VERSION — deleted on Version Release.",
   "type": "object",
-  "required": ["task_id", "feature_id", "status", "executor", "timestamp", "files_modified", "expected_interface", "outstanding_bugs", "test_coverage"],
+  "required": ["task_id", "feature_id", "status", "executor", "timestamp", "escalation_note", "concerns_logged", "files_modified", "expected_interface", "outstanding_bugs", "test_coverage"],
   "additionalProperties": false,
 
   "properties": {
@@ -22,7 +22,7 @@
 
     "status": {
       "type": "string",
-      "enum": ["completed", "failed", "blocked"],
+      "enum": ["completed", "failed", "blocked", "escalated"],
       "description": "Task completion status. Use 'blocked' only when the blocker cannot be resolved without human decision."
     },
 
@@ -59,6 +59,18 @@
           }
         }
       }
+    },
+
+    "escalation_note": {
+      "type": ["string", "null"],
+      "description": "Tier 3 only: what was tried, why cannot proceed. null if not escalated."
+    },
+
+    "concerns_logged": {
+      "type": "array",
+      "description": "IDs of CONCERN-*.md files this task created or actively worked around. Read docs/concerns/*.md before implementing. Always populate this field — empty array if none.",
+      "items": { "type": "string", "pattern": "^CONCERN-\\d+$" },
+      "default": []
     },
 
     "expected_interface": {
