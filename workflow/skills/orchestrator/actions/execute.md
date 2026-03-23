@@ -82,8 +82,5 @@ WAVE 2 (parallel)
 
 ## Escalation Rules
 
-- **Minor bug / code smell** → Tier 1: auto-fix inline, log in worker-report
-- **Non-blocking design gap** → Tier 2: create CONCERN-*.md, continue
-- **Truly cannot proceed** → Tier 3: USER NOTIFY with options + trade-offs + recommended
-- Max 3 auto-fix attempts per task. After 3 failures → Tier 2 CONCERN → proceed if possible
-- After 3 failures + truly blocked → Tier 3 USER NOTIFY
+See: §Escalation in SKILL.md (single source of truth).
+

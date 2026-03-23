@@ -58,7 +58,6 @@ Next feature in ROADMAP?
 No features in ROADMAP?
   → Ask user: "Plan a new feature?" or "Version Release?"
 
-Version Release:
-  → Run scripts/create_version_release.py
-  → orient
+Version Release?
+  → See: actions/version-release.md
 ```

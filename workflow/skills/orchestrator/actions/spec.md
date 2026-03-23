@@ -27,7 +27,7 @@ Technical constraints unclear?
 
 ## Step 3: Draft spec.md
 
-Use `resource/spec-kit/templates/spec-template.md` as skeleton.
+Use `templates/spec-template.md` as skeleton.
 
 Required sections:
 ```
