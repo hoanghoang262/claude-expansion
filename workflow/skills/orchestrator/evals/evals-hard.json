@@ -1,0 +1,126 @@
+{
+  "skill_name": "orchestrator",
+  "evals": [
+    {
+      "id": 5,
+      "name": "scope-creep-frozen-spec",
+      "prompt": "We're in the middle of building the auth feature. Wave 2 of 3 is done. I just realized — can you quickly add OAuth/Google login too? It shouldn't take long, just hook into the existing flow.\n\n<session_start_context>\nproject_root: /myapp\ndocs_exists: true\nstate_exists: true\nproject_exists: true\n</session_start_context>\n\ndocs/state.md:\n```\nPhase: IMPLEMENT\nAction: execute\nFeature: user-authentication\nWave: 2/3\nTasks:\n  [x] TASK-1: User Registration Endpoint\n  [x] TASK-2: Login Endpoint + JWT\n  [x] TASK-3: JWT Middleware\n  [x] TASK-4: Protected Routes\n  [x] TASK-5: Integration Tests Wave 1\n  [ ] TASK-6: E2E Auth Flow Test\n  [ ] TASK-7: Performance Benchmarks\n```\n\ndocs/features/user-authentication/spec.md contains: email/password auth only. No mention of OAuth or Google login.",
+      "expected_output": "PM should: (1) recognize spec is FROZEN in IMPLEMENT phase, (2) NOT add OAuth to current spec/plan, (3) either log as Tier 2 concern for future feature OR redirect to post-current-feature spec, (4) continue Wave 3 as planned, (5) NOT ask clarifying requirement questions about OAuth",
+      "assertions": [
+        {
+          "name": "refuses_scope_creep_in_implement",
+          "description": "PM should NOT add OAuth/Google login to current plan — spec is frozen",
+          "check": "no_oauth_added_to_current_wave"
+        },
+        {
+          "name": "acknowledges_spec_frozen_rule",
+          "description": "PM should explicitly state spec is frozen / no changes during IMPLEMENT",
+          "check": "mentions_spec_frozen"
+        },
+        {
+          "name": "does_not_ask_oauth_requirements",
+          "description": "PM should NOT ask questions like 'which OAuth providers?' or 'how should OAuth integrate?' — that's CLARIFY behavior in IMPLEMENT phase",
+          "check": "no_oauth_requirement_questions"
+        },
+        {
+          "name": "handles_oauth_as_new_feature",
+          "description": "PM should treat OAuth as a separate future feature (log concern, defer to new spec, or schedule after current feature)",
+          "check": "defers_oauth_to_future"
+        },
+        {
+          "name": "continues_wave_3",
+          "description": "PM should continue with Wave 3 (TASK-6, TASK-7) as originally planned",
+          "check": "continues_current_wave_plan"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "task-fails-3x-tier3-escalation",
+      "prompt": "TASK-2 (Login Endpoint) has now failed for the third time. Worker reports show:\n\n- Attempt 1: DB connection timeout — test environment can't reach Postgres\n- Attempt 2: Same timeout — tried different connection string, still failing\n- Attempt 3: Changed to SQLite for tests, but now JWT signing key env var is missing in test environment\n\nThe test suite cannot run at all. What do we do?\n\n<session_start_context>\nproject_root: /myapp\ndocs_exists: true\nstate_exists: true\nproject_exists: true\n</session_start_context>\n\ndocs/state.md:\n```\nPhase: IMPLEMENT\nAction: execute\nFeature: user-authentication\nWave: 1/4\nTasks:\n  [x] TASK-1: User Registration Endpoint\n  [~] TASK-2: Login Endpoint + JWT — FAILED (3 attempts)\n  [ ] TASK-3: JWT Middleware\n  [ ] TASK-4: Integration Tests\n```",
+      "expected_output": "PM should: (1) trigger Tier 3 escalation — NOT attempt a 4th fix, (2) present to user: [1] the issue, [2] what was tried (3 attempts), [3] options with trade-offs, [4] recommended action, (3) STOP wave execution until user responds, (4) NOT silently retry or log as Tier 1/2",
+      "assertions": [
+        {
+          "name": "does_not_attempt_4th_fix",
+          "description": "PM should NOT propose or attempt another fix attempt after 3 failures",
+          "check": "no_4th_attempt_proposed"
+        },
+        {
+          "name": "triggers_tier3_escalation",
+          "description": "PM should explicitly escalate to Tier 3 / notify user",
+          "check": "mentions_tier3_or_user_notification"
+        },
+        {
+          "name": "presents_structured_escalation",
+          "description": "PM should present: [1] issue, [2] what was tried, [3] options + trade-offs, [4] recommendation",
+          "check": "escalation_has_4_components"
+        },
+        {
+          "name": "blocks_wave_execution",
+          "description": "PM should NOT proceed to TASK-3 while TASK-2 is unresolved",
+          "check": "does_not_skip_to_task3"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "spec-gap-found-in-implement",
+      "prompt": "I'm in the middle of executing Wave 2 for the payment checkout feature. The implementer subagent for TASK-3 (Payment Processing) just flagged something: the spec doesn't say anything about what to do when Stripe returns a 'card_declined' error — no error handling requirement was specified.\n\nThe spec says: 'User completes purchase → order confirmed.' Nothing about error states.\n\nWhat should I do?\n\n<session_start_context>\nproject_root: /myapp\ndocs_exists: true\nstate_exists: true\nproject_exists: true\n</session_start_context>\n\ndocs/state.md:\n```\nPhase: IMPLEMENT\nAction: execute\nFeature: payment-checkout\nWave: 2/3\nTasks:\n  [x] TASK-1: Cart State\n  [x] TASK-2: PaymentIntent Endpoint\n  [~] TASK-3: Payment Processing — BLOCKED (spec gap: card_declined handling)\n  [ ] TASK-4: Order Confirmation\n  [ ] TASK-5: Integration Tests\n```",
+      "expected_output": "PM should: (1) recognize this as a spec gap discovered mid-IMPLEMENT, (2) log it as Tier 2 CONCERN (NOT ask user for requirements — that's CLARIFY behavior), (3) make a reasonable default decision to unblock the implementer (e.g., 'return 400 with error message'), (4) continue execution, (5) NOT break phase by asking the user 'what should we do when the card is declined?'",
+      "assertions": [
+        {
+          "name": "does_not_ask_user_requirements_in_implement",
+          "description": "PM should NOT ask the user 'what should we do for card_declined?' — spec is frozen, that's CLARIFY behavior",
+          "check": "no_requirement_question_to_user"
+        },
+        {
+          "name": "logs_concern_or_makes_default",
+          "description": "PM should log a Tier 2 CONCERN and/or make a reasonable default implementation decision to unblock",
+          "check": "logs_concern_or_defaults"
+        },
+        {
+          "name": "continues_execution",
+          "description": "PM should continue execution (not halt the entire wave for a non-blocking spec gap)",
+          "check": "continues_wave_execution"
+        },
+        {
+          "name": "documents_the_gap",
+          "description": "PM should record the gap somewhere (concern file, state note) for post-implementation review",
+          "check": "documents_spec_gap"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "routing-conflict-hint-vs-state",
+      "prompt": "Resume work.\n\n<session_start_context>\nrouting_hint: explore\nproject_root: /myapp\ndocs_exists: true\nstate_exists: true\nproject_exists: true\n</session_start_context>\n\ndocs/state.md:\n```\nPhase: IMPLEMENT\nAction: execute\nFeature: user-authentication\nWave: 2/4\nTasks:\n  [x] TASK-1: User Registration Endpoint\n  [x] TASK-2: Login Endpoint + JWT\n  [ ] TASK-3: JWT Middleware\n  [ ] TASK-4: Integration Tests\nLast updated: 2026-03-24T10:30:00\nNote: Wave 2 was interrupted mid-session. TASK-3 not yet dispatched.\n```",
+      "expected_output": "PM should: (1) notice the conflict between routing_hint=explore (suggesting no project memory) and state.md showing active IMPLEMENT phase wave 2, (2) correctly prioritize state.md over the routing_hint (state.md is ground truth), (3) resume Wave 2 — dispatch TASK-3, (4) NOT restart from explore/Init Memory, (5) NOT ask the user to 're-explain the project'",
+      "assertions": [
+        {
+          "name": "prioritizes_state_over_routing_hint",
+          "description": "PM should use state.md as ground truth, not blindly follow routing_hint=explore when state exists",
+          "check": "uses_state_md_not_routing_hint"
+        },
+        {
+          "name": "does_not_restart_explore",
+          "description": "PM should NOT run Init Memory / explore questioning when state.md clearly shows IMPLEMENT wave 2",
+          "check": "no_explore_init_memory"
+        },
+        {
+          "name": "resumes_wave2_task3",
+          "description": "PM should resume from where it left off — dispatch TASK-3 in Wave 2",
+          "check": "resumes_task3_dispatch"
+        },
+        {
+          "name": "explains_conflict_resolution",
+          "description": "PM should briefly acknowledge the routing_hint conflict and explain why it chose state.md",
+          "check": "explains_why_state_wins"
+        }
+      ],
+      "files": []
+    }
+  ]
+}
