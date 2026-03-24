@@ -1,61 +1,50 @@
-# discuss — Requirements Gathering
+# discuss
 
-## When Orchestrator asks the user
+**Phase:** CLARIFY — Gathering requirements
 
-1. **Entering discuss:** gather or clarify requirements
-2. **During any action:** a trade-off decision that AI cannot resolve alone
+## Purpose
 
-## Step 1: Read existing context (in parallel)
+Understand the user's requirement completely through wave-based questioning.
 
-```
-docs/PROJECT.md
-docs/ROADMAP.md
-docs/features/           ← check existing features
-docs/standards/TESTING.md
-```
+## Iron Law
 
-## Step 2: Analyze user intent
+`DO NOT PROPOSE SOLUTIONS BEFORE UNDERSTANDING THE PROBLEM.`
 
-```
-User describes a COMPLETELY NEW feature?
-  → YES → New feature → Step 3
+---
 
-Feature already in features/?
-  → Yes, spec exists? → `spec` (skip discuss)
-  → Yes, spec absent? → read requirement.md → `spec`
-  → No → New feature → Step 3
-```
+## Wave-Based Questioning
 
-## Step 3: Gather information
+Ask questions in waves. Each wave builds on the previous.
 
-```
-Description CLEAR?
-  → YES → Step 4a
+**Wave 1 — Overview** (always ask):
+- What is the goal? (one sentence: "I want to...")
+- Who is the user/system that benefits?
+- What does "done" look like? How will you know it works?
 
-Description VAGUE?
-  → YES → Step 4b (max 5 questions, ask all at once)
-```
+**Wave 2 — Constraints** (if Wave 1 answers are clear):
+- Any integration with existing systems?
+- Performance, security, or scale requirements?
+- Tech stack constraints (must use X, cannot use Y)?
 
-**5 questions (ask all at once):**
+**Wave N — Edge cases** (only if needed):
+- What happens when [boundary condition]?
+- What should fail gracefully vs fail loudly?
 
-1. "What is the end goal? (What does the user achieve?)"
-2. "Who is the user? (Frontend dev? End user? Admin?)"
-3. "When is the feature DONE?" — criteria must be OBSERVABLE
-4. "Any special technical constraints?"
-5. "Any API/service you want to integrate?"
+### Rules
 
-## Step 4a: Enough information
+- Group related questions together. Never ask one at a time.
+- Prioritize questions that affect later questions.
+- Max 3 waves before moving to spec. If still unclear, mark [NEEDS CLARIFICATION] and move on.
+- Update `docs/state.md` after each wave.
 
-```
-1. Create: docs/features/{id}-{name}/requirement.md
-   Use: templates/requirement-template.md
-2. Update: docs/ROADMAP.md (add feature to milestone)
-3. Output artifact: docs/features/{id}/requirement.md
-```
+---
 
-## Step 4b: Need clarification
+## Output
 
-```
-Ask 5 questions (see above).
-After user answers → Step 4a.
-```
+After waves complete:
+1. Write `docs/features/{name}/spec.md` with requirements section only (user stories + FR-xxx)
+2. Mark any unresolved items as `[NEEDS CLARIFICATION: specific question]`
+3. Update `docs/state.md` → Phase: CLARIFY, Action: spec
+4. Route to `spec`
+
+Leave technical design sections empty — `spec` action fills those.

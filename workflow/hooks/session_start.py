@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
 SessionStart hook for workflow plugin.
-1. Injects orchestrator skill into Claude's context.
-2. Auto-initializes docs/ if absent or empty.
-3. Performs orient-before-acting and routes to the correct phase.
+1. Injects orchestrator SKILL.md into Claude's context.
+2. Reads project state and provides routing_hint to orchestrator.
+3. When docs/ absent or incomplete: routing_hint=explore.
+   When docs/ present with state.md: no routing_hint (orchestrator reads state.md).
 """
 import json
 from pathlib import Path
@@ -30,44 +31,47 @@ def get_orchestrator_skill() -> str:
 
 def main() -> None:
     project_root = find_project_root()
+    skill_text = get_orchestrator_skill()
 
     if project_root is None:
-        # No project found — nothing to initialize, let Orchestrator handle it
-        skill_text = get_orchestrator_skill()
+        # No docs/ found anywhere — orchestrator will run explore to init memory
         output = {
             "hookSpecificOutput": {
                 "hookEventName": "SessionStart",
-                "additionalContext": f"<workflow-orchestrator>\n{skill_text}\n</workflow-orchestrator>",
+                "additionalContext": (
+                    f"<workflow-orchestrator>\n{skill_text}\n</workflow-orchestrator>\n\n"
+                    f"<session_start_context>\n"
+                    f"routing_hint: explore\n"
+                    f"docs_exists: false\n"
+                    f"</session_start_context>"
+                ),
             }
         }
         print(json.dumps(output))
         return
 
     docs_dir = project_root / "docs"
-    state_file = docs_dir / "STATE.md"
-    project_file = docs_dir / "PROJECT.md"
+    state_file = docs_dir / "state.md"
+    project_file = docs_dir / "project.md"
 
-    # Determine initial action for Orchestrator to select
-    if not project_file.exists():
-        routing_hint = "orient"
-    elif not state_file.exists():
-        routing_hint = "orient"
+    # docs/ found but project not initialized yet
+    if not project_file.exists() or not state_file.exists():
+        routing_hint_line = "routing_hint: explore\n"
     else:
-        routing_hint = "ready"
+        # docs/ and state.md both exist — orchestrator reads state.md to determine next action
+        routing_hint_line = ""
 
-    skill_text = get_orchestrator_skill()
     output = {
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
             "additionalContext": (
-                f"<workflow-orchestrator>\n{skill_text}\n"
-                f"</workflow-orchestrator>\n\n"
+                f"<workflow-orchestrator>\n{skill_text}\n</workflow-orchestrator>\n\n"
                 f"<session_start_context>\n"
                 f"project_root: {str(project_root)}\n"
-                f"routing_hint: {routing_hint}\n"
-                f"docs_exists: {docs_dir.exists()}\n"
-                f"state_exists: {state_file.exists()}\n"
-                f"project_exists: {project_file.exists()}\n"
+                f"{routing_hint_line}"
+                f"docs_exists: {str(docs_dir.exists()).lower()}\n"
+                f"state_exists: {str(state_file.exists()).lower()}\n"
+                f"project_exists: {str(project_file.exists()).lower()}\n"
                 f"</session_start_context>"
             ),
         }

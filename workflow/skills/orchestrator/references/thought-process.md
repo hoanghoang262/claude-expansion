@@ -1,39 +1,24 @@
-# Thought Process Protocol
+# Self-Question Protocol
 
-Run **before every action transition**. No tool calls until this block is fully written.
+Run before every action transition. Answer each question with evidence label.
 
-```xml
-<thought_process>
-  <current_state>
-    Read STATE.md. One sentence: current action + feature + wave.
-  </current_state>
+## Before selecting an action
 
-  <user_intent>
-    One sentence: what does the user want right now?
-  </user_intent>
+1. What is the current phase? (CLARIFY or IMPLEMENT) `[fact from state.md]`
+2. What does the user actually need right now? `[fact/infer]`
+3. What docs exist? What docs are missing? `[fact]`
+4. Am I about to violate any hard constraint? `[self-check]`
+5. Is there an open Tier 3 concern I haven't resolved? `[fact from concerns/]`
 
-  <artifact_check>
-    What exists in docs/? What is missing? Any risks (corrupted state, missing deps)?
-    Label each: [fact] | [infer] | [assume].
-  </artifact_check>
+## Before dispatching subagents
 
-  <checkpoint_present>
-    Yes/No. If yes: which checkpoint and what it requires.
-  </checkpoint_present>
+1. Do I have the full task text ready to pass (not a file path)? `[check]`
+2. Do I have the relevant spec excerpt (not the full spec)? `[check]`
+3. What is the success condition for this subagent? `[must be explicit]`
+4. What do I do if it fails? `[must have a plan]`
 
-  <concerns>
-    Any open CONCERN-*.md that affects this transition?
-  </concerns>
+## Before reporting to user
 
-  <decision>
-    "DELEGATE [next action] because [reason]."
-    Must not contradict artifact_check. Contradiction found → STOP → re-read docs → resolve.
-  </decision>
-</thought_process>
-```
-
-## Rules
-
-1. Skip this = invalid transition.
-2. `artifact_check` contradicts `decision` → STOP → re-read docs → resolve.
-3. Every claim in `artifact_check` must carry a label.
+1. Do I have test evidence for every claim? `[no evidence = no claim]`
+2. Are there open concerns the user should know about? `[check concerns/]`
+3. What is the recommended next step? `[always provide one]`

@@ -1,60 +1,89 @@
-# plan — Wave-Based Task Planning
+# plan
 
-## Step 1: Load context (in parallel)
+**Phase:** IMPLEMENT — Task breakdown
 
+## Purpose
+
+Break approved spec into micro-tasks grouped into execution waves.
+
+## Iron Law
+
+`EVERY TASK MUST HAVE TEST CRITERIA BEFORE IMPLEMENT. NO EXCEPTIONS.`
+
+---
+
+## Steps
+
+### Step 1 — Read inputs
+
+- `docs/features/{name}/spec.md` (approved) — acceptance criteria, components, file changes
+- `docs/rules/` — git-workflow, coding-standards, testing-strategy
+- `docs/state.md` — current wave progress (if resuming)
+
+### Step 2 — Decompose into tasks
+
+Each task must:
+- Take ~2-5 minutes for an implementer
+- Touch at most 1-2 files
+- Be independently verifiable (has runnable test)
+- Have no implicit dependencies (dependencies are explicit)
+
+Task format:
 ```
-docs/features/{id}/spec.md
-docs/features/{id}/requirement.md
-docs/standards/TESTING.md
-```
+### TASK-{N}: {name}
 
-## Step 2: Decompose into micro-tasks
-
-Break the spec into the smallest independently actionable tasks:
-- One task = one file or one function
-- No task takes more than one subagent-session to complete
-- Estimate: 2-5 minutes per task
-
-For each task:
-```
-ACTION       — what to do (imperative: "Create", "Implement", "Add")
-FILES        — which files to touch
-VERIFY       — how to verify this is done
-DEPENDENCIES — what must complete first
-REQUIREMENTS  — any constraints from spec
-```
-
-## Step 3: Assign waves
-
-Group tasks into waves. Tasks within a wave run in parallel.
-
-```
-WAVE 1: Tasks with no dependencies → parallel
-WAVE 2: Tasks that depend only on Wave 1 → parallel
-WAVE 3: Tasks that depend only on Wave 2 → parallel
-...
-```
-
-## Step 4: Identify blockers
-
-If a task depends on something outside the team's control:
-
-```
-Add checkpoint at the wave boundary:
-  checkpoint:human-verify → stop and ask user to confirm before proceeding
-  checkpoint:decision     → stop and present options to user
-  checkpoint:human-action → stop, provide instructions to user, wait for action
+ACTION: [create | modify | delete | test]
+FILES: [list of files]
+WHAT: [what to implement — reference spec section]
+TEST: [specific test that proves this task is done]
+DEPENDS_ON: [TASK-N, TASK-M or "none"]
 ```
 
-## Step 5: Validate plan
+### Step 3 — Group into waves
 
+- Wave 1: Tasks with no dependencies
+- Wave 2: Tasks that depend only on Wave 1
+- Wave N: Tasks that depend on Wave N-1
+
+Max 5 tasks per wave (parallel execution limit).
+
+### Step 4 — Write PLAN.md
+
+Write to `docs/features/{name}/PLAN.md`:
 ```
-No circular dependencies between tasks?
-No task is too large (>1 subagent-session)?
-All blockers identified and marked with checkpoints?
-Wave assignments are correct?
+# Plan: {feature name}
+
+## Objective
+[one sentence]
+
+## Waves
+
+### Wave 1 (parallel)
+- TASK-1: ...
+- TASK-2: ...
+
+### Wave 2 (parallel, after Wave 1)
+- TASK-3: ...
+
+## Task Details
+[full task definitions]
+
+## Dependencies Diagram
+[ASCII or list]
+
+## Risks
+[what could go wrong, mitigation]
 ```
 
-## Output
+### Step 5 — Update state
 
-Create: `docs/features/{id}/PLAN.md` using `templates/plan-template.md`.
+Update `docs/state.md`:
+```
+Phase: IMPLEMENT
+Action: execute
+Feature: {name}
+Wave: 1/{total}
+Tasks: [ ] TASK-1 [ ] TASK-2 ...
+```
+
+Route to `execute`.
