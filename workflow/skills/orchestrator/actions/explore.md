@@ -45,12 +45,48 @@ Label every finding: `[fact]` / `[infer]` / `[assume]`
 | Context                                         | Route to  |
 |-------------------------------------------------|-----------|
 | No project.md                                   | Init Memory |
+| User provides resolution for an open concern    | **Concern Resolution** below |
 | New feature request, no spec                    | `discuss` |
 | Spec exists but has [NEEDS CLARIFICATION]       | `spec`    |
 | Spec approved, no PLAN.md                       | `plan`    |
 | PLAN.md exists, work incomplete                 | `execute` |
 | Work done, verify missing                       | `verify`  |
 | User confirms all done                          | Summarize + ask about next feature |
+
+---
+
+## Concern Resolution
+
+When the user provides a product decision that resolves an open concern:
+
+1. **Create `docs/decisions/YYYY-MM-DD-{slug}.md` [PERMANENT]** first:
+
+```markdown
+# Decision: {title}
+
+Date: YYYY-MM-DD
+Status: accepted
+Prompted by: docs/concerns/{CONCERN-file}.md
+
+## Context
+{Why this decision was needed — the gap or ambiguity that surfaced it}
+
+## Decision
+{What was decided — specific, unambiguous}
+
+## Consequences
+{What this enables, what it constrains, any follow-on work needed}
+```
+
+2. **Update `docs/concerns/{CONCERN-file}.md`** — set `Status: resolved`, add:
+```
+Resolved: YYYY-MM-DD
+Resolution: see docs/decisions/{slug}.md
+```
+
+3. **Do NOT delete the concern file** — it is `[PERMANENT]`. It serves as the audit trail of what was discovered and when.
+
+4. If the decision requires implementation (e.g., "build retry flow"), offer to open a `discuss` action for the new feature. Do not implement without a spec.
 
 ---
 
