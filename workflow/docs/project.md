@@ -50,15 +50,9 @@ Developer building this plugin for personal use and potentially public release.
 
 ## Goals
 
-**Now:** Solid PA skill foundation
-- Clean SKILL.md with correct architecture
-- 4-phase cycle that works for any project type
-- Memory system that accumulates value over time
+**Current milestone:** Complete PA skill foundation — SKILL.md, memory templates, agents roster
 
-**Later:** PA smart enough to be a real personal assistant
-- Understands user without being told
-- Handles any domain — web, research, learning, scripts, config
-- Memory that makes every session better than the last
+**Direction:** PA smart enough to be a real personal assistant — understands user without being told, handles any domain, memory that makes every session better than the last
 
 ---
 

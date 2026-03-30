@@ -3,8 +3,11 @@
 ## Phase
 UNDERSTAND
 
+## Session Goal
+Define and create all memory file templates for the orchestrator skill
+
 ## Current Work
-Refining docs/ structure — two-scope split (docs/ vs docs/.pa/), base vs organic
+Memory system design — templates created, memory-guide updated
 
 ## Progress
 - [x] SKILL.md rewritten — 4-phase, PA persona, hard constraints
