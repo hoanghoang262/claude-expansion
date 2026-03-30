@@ -1,0 +1,40 @@
+description: >
+  Serena mode for workflow plugin. Exposes navigation and editing tools only.
+  Memory is handled by docs/ (project memory lifecycle). Onboarding context
+  is handled by STATE.md. JetBrains backend not used.
+
+prompt: |
+  You are operating in workflow-plugin mode.
+  Memory tools are disabled — project memory lives in docs/ and is managed by the orchestrator.
+  Use LSP-backed navigation and symbol-level editing tools for all code tasks.
+
+excluded_tools:
+  # Memory — handled by docs/
+  - write_memory
+  - read_memory
+  - delete_memory
+  - edit_memory
+  - rename_memory
+  - list_memories
+
+  # Onboarding / session context — handled by STATE.md
+  - onboarding
+  - check_onboarding_performed
+  - prepare_for_new_conversation
+  - summarize_changes
+
+  # JetBrains backend — not used
+  - jet_brains_find_symbol
+  - jet_brains_find_referencing_symbols
+  - jet_brains_get_symbols_overview
+  - jet_brains_type_hierarchy
+
+  # UI / multi-project — not needed in automation
+  - open_dashboard
+  - query_project
+  - list_queryable_projects
+
+  # Dangerous / not needed
+  - remove_project
+  - initial_instructions
+  - switch_modes

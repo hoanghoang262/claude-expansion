@@ -1,0 +1,94 @@
+{
+  "skill_name": "orchestrator-phase1",
+  "description": "Test Phase 1 (CLARIFY): clarify → init → clarify Part 2. Focus on init creating real docs.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "new-empty-project",
+      "prompt": "toi muon lam mot web game mario don gian",
+      "context": "Empty directory, no files, no docs/, no code.",
+      "expected_flow": "clarify (detect empty) → init mode:new (ask user) → clarify Part 2 BUILD",
+      "assertions": [
+        { "id": "A1", "text": "clarify detects empty project → routes to init mode:new", "type": "flow" },
+        { "id": "A2", "text": "PM reads actions/init.md before running init", "type": "flow" },
+        { "id": "A3", "text": "init asks user via AskUserQuestion, not plain text", "type": "tool_usage" },
+        { "id": "A4", "text": "init runs create_docs_structure.py (not Write tool for project.md/state.md)", "type": "flow" },
+        { "id": "A5", "text": ".claude/rules/ created: constitution.md + memory-structure.md", "type": "output" }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "existing-code-init-flow",
+      "prompt": "toi muon them tinh nang authentication vao project nay",
+      "context": "Project has: package.json, src/modules/{auth,user,video}, .git/, .eslintrc, prisma/, docker-compose.yml. NO docs/.",
+      "expected_flow": "clarify (quick scan) → init mode:existing (skeleton → general agent → feature agents) → clarify Part 2 BUILD",
+      "assertions": [
+        { "id": "B1", "text": "clarify quick scan: ls + git check + package.json only (3-4 tool calls)", "type": "flow" },
+        { "id": "B2", "text": "PM reads actions/init.md before running init", "type": "flow" },
+        { "id": "B3", "text": "init Step 0: runs create_docs_structure.py to create skeleton", "type": "flow" },
+        { "id": "B4", "text": "init Step 1: spawns ONE general exploration agent", "type": "flow" },
+        { "id": "B5", "text": "general agent writes DIRECTLY to docs/project.md, .claude/rules/, docs/foundations/", "type": "output" },
+        { "id": "B6", "text": "general agent outputs a feature list", "type": "output" },
+        { "id": "B7", "text": "init Step 2: spawns feature agents IN PARALLEL for each feature from list", "type": "flow" },
+        { "id": "B8", "text": "feature agents write DIRECTLY to docs/features/{name}/requirements.md, user-stories.md, spec.md", "type": "output" },
+        { "id": "B9", "text": "init Step 3: PM reviews docs for gaps", "type": "flow" },
+        { "id": "B10", "text": "init Step 4: presents summary to user via AskUserQuestion", "type": "tool_usage" },
+        { "id": "B11", "text": "PM does NOT read source code — only reads agent output / docs", "type": "constraint" },
+        { "id": "B12", "text": "state.md contains orchestrator tracking only (phase/action/feature), NOT project status", "type": "output" }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "existing-memory-feature-request",
+      "prompt": "toi muon them dark mode vao app",
+      "context": "Complete docs/ exists: project.md, state.md, .claude/rules/, features/. Project: React/TypeScript web app.",
+      "expected_flow": "clarify (read docs → Part 2 BUILD) → spec",
+      "assertions": [
+        { "id": "C1", "text": "clarify reads project.md + state.md → goes to Part 2 (skips init)", "type": "flow" },
+        { "id": "C2", "text": "asks about dark mode requirements via AskUserQuestion", "type": "tool_usage" },
+        { "id": "C3", "text": "does NOT re-ask project type or tech stack", "type": "constraint" }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "broken-memory",
+      "prompt": "toi muon lam mot web game mario",
+      "context": "docs/ exists with features/mario/spec.md but NO project.md.",
+      "expected_flow": "clarify (detect project.md missing → broken) → init",
+      "assertions": [
+        { "id": "D1", "text": "clarify detects project.md missing → treats as broken memory", "type": "flow" },
+        { "id": "D2", "text": "does NOT read or reuse orphaned spec.md", "type": "constraint" },
+        { "id": "D3", "text": "routes to init to rebuild memory", "type": "flow" }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "analyze-existing-project",
+      "prompt": "phan tich project va chay no de toi xem no co j",
+      "context": "Existing monorepo: package.json, src/, prisma/, docker-compose.yml. NO docs/.",
+      "expected_flow": "clarify (quick scan) → init mode:existing (full docs creation) → clarify Part 2 EXPLORE-TASK",
+      "assertions": [
+        { "id": "E1", "text": "orchestrator activates — does NOT skip to reading code directly", "type": "flow" },
+        { "id": "E2", "text": "init creates skeleton FIRST (create_docs_structure.py)", "type": "flow" },
+        { "id": "E3", "text": "general agent updates docs/project.md with real info (not placeholder)", "type": "output" },
+        { "id": "E4", "text": "feature agents create docs/features/{name}/ for each major feature", "type": "output" },
+        { "id": "E5", "text": ".claude/rules/ has: constitution.md, memory-structure.md, conventions.md, git-workflow.md", "type": "output" },
+        { "id": "E6", "text": "clarify Part 2 asks EXPLORE-TASK scope via AskUserQuestion", "type": "tool_usage" },
+        { "id": "E7", "text": "PM does NOT read env files, source code, or docker configs directly", "type": "constraint" }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "partial-memory-state-missing",
+      "prompt": "them tinh nang moi",
+      "context": "docs/project.md exists with valid content. docs/state.md is MISSING.",
+      "expected_flow": "clarify (project.md exists, state.md missing → partial memory) → recreate state.md → Part 2",
+      "assertions": [
+        { "id": "F1", "text": "clarify reads project.md successfully", "type": "flow" },
+        { "id": "F2", "text": "clarify detects state.md missing → recreates it (not full init)", "type": "flow" },
+        { "id": "F3", "text": "does NOT treat as broken memory — project.md is valid", "type": "constraint" },
+        { "id": "F4", "text": "proceeds to Part 2 after recreating state.md", "type": "flow" }
+      ]
+    }
+  ]
+}

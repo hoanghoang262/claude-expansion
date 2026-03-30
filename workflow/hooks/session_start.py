@@ -1,79 +1,79 @@
 #!/usr/bin/env python3
 """
 SessionStart hook for workflow plugin.
-1. Injects orchestrator SKILL.md into Claude's context.
-2. Reads project state and provides routing_hint to orchestrator.
-3. When docs/ absent or incomplete: routing_hint=explore.
-   When docs/ present with state.md: no routing_hint (orchestrator reads state.md).
+Loads orchestrator context. Pre-injects init.md when docs/ is missing.
 """
 import json
 from pathlib import Path
 
 PLUGIN_ROOT = Path(__file__).parent.parent
+ORCHESTRATOR_DIR = PLUGIN_ROOT / "skills" / "orchestrator"
+ACTIONS_DIR = ORCHESTRATOR_DIR / "actions"
+
+
+def read_file(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return f"[Error: {path.name} not found]"
 
 
 def find_project_root() -> Path | None:
-    """Walk up from cwd to find a directory with docs/ inside."""
+    """Walk up from cwd to find project root (has package.json or .git/)."""
     cwd = Path.cwd()
     for candidate in [cwd, cwd.parent, cwd.parent.parent]:
-        if (candidate / "docs").exists():
+        if (candidate / "package.json").exists() or (candidate / ".git").exists():
             return candidate
-    return None
+    return cwd
 
 
-def get_orchestrator_skill() -> str:
-    """Load the orchestrator SKILL.md content."""
-    try:
-        return (PLUGIN_ROOT / "skills" / "orchestrator" / "SKILL.md").read_text(encoding="utf-8")
-    except OSError:
-        return "[workflow-orchestrator] Error: SKILL.md not found."
+def check_docs(project_root: Path) -> bool:
+    """Check if docs/project.md exists."""
+    return (project_root / "docs" / "project.md").exists()
 
 
 def main() -> None:
+    skill_text = read_file(ORCHESTRATOR_DIR / "SKILL.md")
+
     project_root = find_project_root()
-    skill_text = get_orchestrator_skill()
+    has_docs = check_docs(project_root) if project_root else False
 
-    if project_root is None:
-        # No docs/ found anywhere — orchestrator will run explore to init memory
-        output = {
-            "hookSpecificOutput": {
-                "hookEventName": "SessionStart",
-                "additionalContext": (
-                    f"<workflow-orchestrator>\n{skill_text}\n</workflow-orchestrator>\n\n"
-                    f"<session_start_context>\n"
-                    f"routing_hint: explore\n"
-                    f"docs_exists: false\n"
-                    f"</session_start_context>"
-                ),
-            }
-        }
-        print(json.dumps(output))
-        return
+    # If no docs → also inject init.md so AI doesn't need to find it
+    init_section = ""
+    if not has_docs:
+        init_text = read_file(ACTIONS_DIR / "init.md")
+        init_section = (
+            f"\n\n<init-action-preloaded>\n{init_text}\n</init-action-preloaded>"
+            "\n\n<important-reminder>"
+            "IN YOUR FIRST REPLY AFTER SEEING THIS MESSAGE YOU MUST:\n"
+            "1. Announce: 🎯 **Personal Assistant active** — running init\n"
+            "2. Try reading docs/project.md — it will fail (docs/ missing)\n"
+            "3. Do a quick scan (ls, check .git/, package.json)\n"
+            "4. Then IMMEDIATELY run init from the preloaded init action above\n"
+            "5. init MUST spawn general-purpose agent — PA does NOT read code\n"
+            "DO NOT skip init. DO NOT read source code yourself.\n"
+            f"Project types at: {ORCHESTRATOR_DIR}/project-types/\n"
+            "</important-reminder>"
+        )
 
-    docs_dir = project_root / "docs"
-    state_file = docs_dir / "state.md"
-    project_file = docs_dir / "project.md"
-
-    # docs/ found but project not initialized yet
-    if not project_file.exists() or not state_file.exists():
-        routing_hint_line = "routing_hint: explore\n"
-    else:
-        # docs/ and state.md both exist — orchestrator reads state.md to determine next action
-        routing_hint_line = ""
+    context = (
+        "<EXTREMELY_IMPORTANT>\n"
+        "You are the Personal Assistant (PA). You coordinate, delegate, manage memory.\n"
+        "You do NOT read source code or analyze implementations — agents do that.\n\n"
+        f"{skill_text}\n\n"
+        f"actions_dir: {ACTIONS_DIR}\n"
+        f"project_types_dir: {ORCHESTRATOR_DIR}/project-types\n"
+        f"scripts_dir: {ORCHESTRATOR_DIR}/scripts\n"
+        f"project_root: {project_root}\n"
+        f"docs_exist: {str(has_docs).lower()}\n"
+        f"{init_section}\n"
+        "</EXTREMELY_IMPORTANT>"
+    )
 
     output = {
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": (
-                f"<workflow-orchestrator>\n{skill_text}\n</workflow-orchestrator>\n\n"
-                f"<session_start_context>\n"
-                f"project_root: {str(project_root)}\n"
-                f"{routing_hint_line}"
-                f"docs_exists: {str(docs_dir.exists()).lower()}\n"
-                f"state_exists: {str(state_file.exists()).lower()}\n"
-                f"project_exists: {str(project_file.exists()).lower()}\n"
-                f"</session_start_context>"
-            ),
+            "additionalContext": context,
         }
     }
     print(json.dumps(output))

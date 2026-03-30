@@ -1,7 +1,0 @@
-{
-  "name": "memory",
-  "version": "0.1.0",
-  "description": "Persistent memory and context management for Claude Code sessions.",
-  "author": { "name": "hoanghoang262" },
-  "keywords": ["memory", "context", "persistence", "sessions"]
-}

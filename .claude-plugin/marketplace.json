@@ -7,19 +7,7 @@
       "name": "workflow",
       "source": "./workflow",
       "description": "Workflow automation plugin for Claude Code.",
-      "version": "0.1.0"
-    },
-    {
-      "name": "playwright-cli",
-      "source": "./playwright-cli",
-      "description": "Automates browser interactions for web testing, form filling, screenshots, and data extraction.",
-      "version": "0.1.0"
-    },
-    {
-      "name": "memory",
-      "source": "./memory",
-      "description": "Persistent memory and context management for Claude Code sessions.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }
