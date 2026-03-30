@@ -2,53 +2,72 @@
 
 Triggered when: no `docs/project.md` exists.
 
----
-
-## Step 1 — Gather project info
-
-**New project (no codebase):**
-Ask user 3 questions max:
-- What is this project?
-- What do you want to achieve?
-- Any constraints or preferences I should know?
-
-**Existing project (has codebase):**
-1. Spawn codebase-surveyor → scan project structure
-2. Form hypotheses: project type, tech stack, current state
-3. Ask 1-2 targeted questions to fill gaps
+Init is full project onboarding — understand the project deeply, help the user get started if needed, then capture that understanding in memory.
 
 ---
 
-## Step 2 — Create base docs/
+## Case A — No codebase (new project)
 
-Always create this minimal structure — no exceptions:
+User has a vision but nothing built yet.
 
+### Phase 1 — UNDERSTAND
+
+PA asks user deeply. One question at a time. Never more than one at once.
+
+Cover (not necessarily in this order — follow the conversation):
+- What is this? What problem does it solve?
+- Who is it for? What does success look like?
+- Tech preferences? Stack, tools, constraints?
+- Any timeline, team, or other constraints?
+
+PA listens, follows up, until it genuinely understands the vision. 3–5 exchanges is normal.
+
+### Phase 2 — BUILD foundation
+
+Help the user get started with a concrete base. PA recommends — never presents blank options.
+
+Depending on what was gathered:
+- Software project → dispatch `implementer` to scaffold: git init, folder structure, config files, package manager setup, chosen stack
+- Research/learning → propose structure, first topic/experiment skeleton
+- Any type → make it concrete: something runnable or usable exists after this phase
+
+### Phase 3 — CAPTURE
+
+Dispatch agent with skill `memory-architect`:
 ```
-docs/
-├── project.md            ← from gathered info
-└── .pa/
-    ├── state.md          ← phase: UNDERSTAND
-    ├── learnings/
-    ├── concerns/
-    └── worker-reports/
+Use skill memory-architect.
+op: init
+project_info: {everything PA gathered}
+project_type: {detected from conversation}
+project_root: {project_root from context}
 ```
 
-Organic layers (`setup.md`, `usage/`, `architecture/`, `decisions/`) are created only when real content exists — never pre-created empty.
+---
+
+## Case B — Codebase exists (existing project)
+
+PA joins an in-progress project.
+
+### Phase 1 — UNDERSTAND via memory-architect
+
+Dispatch agent with skill `memory-architect`:
+```
+Use skill memory-architect.
+op: init
+project_type: unknown
+project_root: {project_root from context}
+```
+
+memory-architect scans the codebase, creates docs/, and returns a worker-report with `key_findings`.
+
+PA reads the worker-report. If key_findings reveal gaps PA cannot resolve from the codebase:
+- Ask user 1–2 targeted questions only
+- Update `docs/project.md` with answers
 
 ---
 
-## Step 3 — Detect project type
+## After init
 
-Classify into one of: `web-app` · `ai-ml` · `cli-tool` · `plugin` · `research` · `learning`
+State: phase = UNDERSTAND, current work = initial orientation complete.
 
-Load `project-types/{type}.md` — use it as guide for:
-- What the natural unit folder is called (`features/`, `experiments/`, `topics/`...)
-- What sections to fill in `docs/` for this project type
-
-Do NOT pre-create natural unit folders — create them when first content exists.
-
----
-
-## Step 4 — Return to UNDERSTAND
-
-State: phase = UNDERSTAND, current work = initial orientation.
+PA has context. Proceed to understand what the user wants to accomplish this session.

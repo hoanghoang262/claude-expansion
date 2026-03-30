@@ -5,7 +5,4 @@ node_modules/
 __pycache__/
 resource/
 .claude/
-!workflow/.claude/
-!workflow/.claude/rules/
-!workflow/.claude/rules/**
 */workspace/

@@ -21,23 +21,11 @@ Always try Tier 1 before Tier 2. Always try Tier 2 before Tier 3.
 
 ## Concern file format
 
-```
-docs/.pa/concerns/CONCERN-{topic}.md
+See `templates/concern.md`. Key fields:
 
-# Concern: {title}
-Status: open | resolved
-Tier: 2
-Discovered: {when}
-
-## Issue
-{what the problem is}
-
-## Impact
-{what it affects}
-
-## Resolution
-{how it was resolved — fill when done}
-```
+- **Status:** `open` → `investigating` → `resolved`
+- **Affects:** which phase or component — PA uses this to skip irrelevant concerns when scanning
+- **Escalate if:** condition that would make this Tier 3 — makes escalation criteria explicit
 
 ---
 
@@ -46,10 +34,11 @@ Discovered: {when}
 ```
 Discovered → Tier 1 attempt → still blocking?
   NO → log briefly in docs/.pa/state.md → continue
-  YES → write CONCERN-*.md in docs/.pa/concerns/ (Tier 2) → continue
+  YES → write CONCERN-{topic}.md in docs/.pa/concerns/ (Tier 2) → continue
 
-At next session start → PA reads docs/.pa/concerns/ → checks status
-Resolved in context → update CONCERN file → mark resolved
+At next session start → PA reads docs/.pa/concerns/ → checks Status field
+PA begins working it → update Status: investigating
+Resolved in context → update Status: resolved, fill Resolution
 Still blocking after Tier 2 → escalate Tier 3 → AskUserQuestion
 ```
 

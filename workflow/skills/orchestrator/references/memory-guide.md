@@ -1,96 +1,70 @@
 # Memory Guide
 
-How to structure and grow `docs/` per project.
+How PA interacts with the memory system.
 
 ---
 
-## Structure
+## Two-tier memory
 
 ```
-docs/                        ← Project scope (PA writes, humans read)
-├── project.md               [BASE · LTM] always exists
-└── [organic]                created when real content exists
-    decisions/               when important choices are made (ADR)
-    setup.md                 non-trivial install/run
-    usage/                   interface layer (API, CLI, UI flows)
-    architecture/            system design, schema, data flow
-    specs/                   active feature specs [VERSION — delete on release]
-    [detail layer]/          mirrors project natural structure
-
-docs/.pa/                    ← PA internal scope
-├── state.md                 [BASE · STM] always exists — reset each cycle
-├── learnings/               [BASE · LTM] always exists — patterns PA accumulates
-├── concerns/                [BASE · LTM] always exists — issues PA tracks
-└── worker-reports/          [BASE · STM] always exists — agent outputs, clear at CLOSE
+STM  docs/.pa/state.md, docs/.pa/worker-reports/   reset each session
+LTM  docs/project.md, docs/decisions/,             never deleted
+     docs/.pa/learnings/, docs/.pa/concerns/,
+     docs/[organic layer]/
 ```
 
 ---
 
-## docs/ organic layer — what to create when
+## PA's direct responsibilities
 
-| Content type | Create |
-|---|---|
-| Non-trivial install or run steps | `setup.md` |
-| Public interface (API, CLI, UI flows) | `usage/` or `api.md` or `commands.md` |
-| System design, DB schema, data pipeline | `architecture/` |
-| Active feature spec requiring approval | `specs/{feature}.md` |
-| Feature-oriented project | `features/{name}/` |
-| Component-oriented project | `components/{name}.md` |
-| AI/ML project | `models/`, `pipelines/` |
-| Research project | `findings/`, `sources/` |
-| Script/automation | `tasks/`, `flows/` |
+PA reads and writes these directly — no dispatch needed:
 
-PA derives structure from the actual project — names above are guidance, not prescription.
+| Operation | When |
+|-----------|------|
+| Read `docs/project.md` | Session start — orient to project |
+| Read `docs/.pa/state.md` | Session start — orient to phase |
+| Scan `docs/.pa/concerns/` | Session start — check open issues |
+| Update `docs/.pa/state.md` | Mid-session — track progress, blockers |
+| Log concern to `docs/.pa/concerns/` | Mid-session — Tier 2 issue discovered |
 
 ---
 
-## project.md — what to capture
+## memory-architect's responsibilities
 
-```
-## Overview
-- What is this? Problem it solves? For whom?
-- Project type
-- Tech stack (core only)
-- Key features
+Dispatch `memory-architect` agent for anything structural:
 
-## User Context
-- Role, background, working style
-- What matters most: quality / speed / learning / shipping
+| Operation | When to dispatch |
+|-----------|-----------------|
+| `op=init` | No `docs/project.md` — create full BASE structure + `.claude/rules/` |
+| `op=close` | End of operational session — sync docs/, write learnings/decisions/concerns, reset STM |
 
-## Goals
-- Current milestone
-- Longer-term direction
-
-## Constraints
-- Non-negotiables, known limitations
-```
-
----
-
-## Sync rule — CLOSE phase
-
-When work changes anything user-facing or structural, update before clearing STM:
-
-| Work done | Update |
-|---|---|
-| Feature added / changed | `project.md` Features + `usage/` |
-| Setup / dependencies changed | `setup.md` |
-| Architecture changed | `architecture/` |
-| Important choice made | `decisions/{date}-{topic}.md` |
-| Pattern discovered | `docs/.pa/learnings/{topic}.md` |
-| Issue surfaced | `docs/.pa/concerns/CONCERN-{topic}.md` |
-
-PA does not close a session without asking: *What in docs/ is now stale?*
+All file creation, template use, and `.claude/rules/memory-structure.md` generation goes through memory-architect.
 
 ---
 
 ## STM vs LTM
 
-| Ask | Answer |
-|-----|--------|
-| Will I need this next session? | YES → LTM |
-| Only relevant to current task? | YES → STM or skip |
-| Important choice with lasting impact? | YES → `decisions/` |
-| Pattern worth remembering? | YES → `.pa/learnings/` |
-| Issue that may affect future work? | YES → `.pa/concerns/` |
-| Working data, agent outputs? | YES → `.pa/worker-reports/` |
+| Question | Answer |
+|----------|--------|
+| Will I need this next session? | YES → LTM (dispatch memory-architect at CLOSE) |
+| Only relevant now? | YES → STM or skip |
+| Important choice? | `decisions/{date}-{topic}.md` |
+| Pattern discovered? | `.pa/learnings/{topic}.md` |
+| Issue that may affect future? | `.pa/concerns/CONCERN-{topic}.md` |
+| Agent output? | `.pa/worker-reports/{task}.md` |
+
+---
+
+## concern lifecycle
+
+```
+Discovered → Tier 1 attempt → still blocking?
+  NO  → brief note in state.md → continue
+  YES → write CONCERN-{topic}.md (Tier 2) → continue
+
+Session start → PA scans concerns/ → checks Status field
+Resolved → update Status: resolved, fill Resolution
+Still blocking after Tier 2 → Tier 3 → AskUserQuestion
+```
+
+Status: `open` → `investigating` → `resolved`
